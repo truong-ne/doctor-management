@@ -22,8 +22,8 @@ export class DoctorService extends BaseService<Doctor> {
 
         const doctor = new Doctor()
         doctor.full_name = dto.full_name
-        doctor.phone = dto.phone,
-            doctor.specialty = dto.specialty
+        doctor.phone = dto.phone
+        doctor.specialty = dto.specialty
         doctor.password = await this.hashing(dto.password)
         doctor.created_at = this.VNTime()
         doctor.updated_at = doctor.created_at
@@ -37,7 +37,7 @@ export class DoctorService extends BaseService<Doctor> {
                 phone: doctor.phone,
                 specialty: doctor.specialty
             },
-            msg: "Successfully"
+            message: "Successfully"
         }
     }
 
@@ -50,7 +50,7 @@ export class DoctorService extends BaseService<Doctor> {
 
         return {
             data: doctor.avatar,
-            msg: "Successfully"
+            message: "Successfully"
         }
     }
 
@@ -71,7 +71,6 @@ export class DoctorService extends BaseService<Doctor> {
     async findDoctorById(user_id: string) {
         try {
             return await this.doctorRepository.findOne({
-                relations: { token: true },
                 where: { id: user_id }
             })
         } catch (error) {

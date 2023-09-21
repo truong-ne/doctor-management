@@ -2,20 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv'
+import { ValidationPipe } from '@nestjs/common';
 
 dotenv.config()
-
-var cookieParser = require('cookie-parser')
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix(process.env.SERVER_NAME)
-  app.use(cookieParser())
   //Swagger
   const config = new DocumentBuilder()
     .setTitle('DOCTOR MANAGEMENT')
-    .setDescription('HealthLine API description')
+    .setDescription('Microservice dùng để quản lí thông tin bác sĩ')
     .setVersion('1.0')
     .addBearerAuth()
     .build()
@@ -33,6 +31,14 @@ async function bootstrap() {
     ],
   })
   //endSwagger
+
+  app.useGlobalPipes(new ValidationPipe())
+
+  app.enableCors({
+    origin: 'https://healthline.vn',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true
+  })
 
   await app.listen(3003);
 }

@@ -1,10 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-import { Token } from "../../auth/entities/token.entity";
 import { nanoid } from "nanoid";
-import { float } from "@elastic/elasticsearch/lib/api/types";
 import { Specialty } from "../../config/enum.constants";
 
-@Entity({ name: 'Doctor' })
+@Entity({ name: 'Doctors' })
 export class Doctor {
     constructor() {
         this.id = nanoid()
@@ -31,11 +29,8 @@ export class Doctor {
     @Column({ nullable: true })
     avatar: string
 
-    @OneToMany(() => Token, token => token.user)
-    token: Token
-
     @Column({ name: 'account_balance', default: 0 })
-    accout_balance: float
+    accout_balance: number
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
