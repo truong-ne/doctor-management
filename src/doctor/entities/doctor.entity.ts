@@ -1,6 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
 import { Specialty } from "../../config/enum.constants";
+import { DoctorRates } from "../../review/entities/feedback.entity";
 
 @Entity({ name: 'Doctors' })
 export class Doctor {
@@ -29,6 +30,12 @@ export class Doctor {
     @Column({ nullable: true })
     avatar: string
 
+    @Column({ nullable: true })
+    biography: string
+
+    @OneToMany(() => DoctorRates, e => e.doctor)
+    rated: DoctorRates[]
+
     @Column({ name: 'account_balance', default: 0 })
     accout_balance: number
 
@@ -37,4 +44,5 @@ export class Doctor {
 
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
+
 }

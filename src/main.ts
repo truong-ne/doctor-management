@@ -15,6 +15,7 @@ async function bootstrap() {
     .setTitle('DOCTOR MANAGEMENT')
     .setDescription('Microservice dùng để quản lí thông tin bác sĩ')
     .setVersion('1.0')
+    .setContact('White Hat', '', 'truonggolang@gmail.com')
     .addBearerAuth()
     .build()
   const document = SwaggerModule.createDocument(app, config)

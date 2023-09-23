@@ -10,6 +10,5 @@ import { Doctor } from './entities/doctor.entity';
     ],
     controllers: [DoctorController],
     providers: [DoctorService],
-    exports: [DoctorService]
 })
 export class DoctorModule { }

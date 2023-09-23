@@ -4,7 +4,7 @@ import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
-import { UpdateImageProfile } from "../dto/updateProfile";
+import { UpdateBiograpyProfile, UpdateImageProfile } from "../dto/updateProfile";
 
 @Injectable()
 export class DoctorService extends BaseService<Doctor> {
@@ -18,7 +18,7 @@ export class DoctorService extends BaseService<Doctor> {
         const check = await this.findDoctorByPhone(dto.phone)
 
         if (check)
-            throw new ConflictException('Số điện thoại đã được đăng kí')
+            throw new ConflictException('phone_number_has_already_been_registered')
 
         const doctor = new Doctor()
         doctor.full_name = dto.full_name
@@ -37,7 +37,7 @@ export class DoctorService extends BaseService<Doctor> {
                 phone: doctor.phone,
                 specialty: doctor.specialty
             },
-            message: "Successfully"
+            message: "succesfully"
         }
     }
 
@@ -49,22 +49,31 @@ export class DoctorService extends BaseService<Doctor> {
         await this.doctorRepository.save(doctor)
 
         return {
-            data: doctor.avatar,
-            message: "Successfully"
+            data: {
+                avatar: doctor.avatar
+            },
+            message: "successfully"
         }
     }
 
-    async listDoctor(): Promise<any> {
-        let listDoctor = await this.doctorRepository.find({
-            select: ["id", "full_name", "specialty", "avatar"]
+    async updateBiography(dto: UpdateBiograpyProfile, id: string): Promise<any> {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: id }
         })
 
+        doctor.biography = dto.biography
+
+        await this.doctorRepository.save(doctor)
+
         return {
-            data: listDoctor
+            data: {
+                biography: doctor.biography
+            },
+            message: "successfully"
         }
     }
 
-    async findDoctorByPhone(phone: string) {
+    async findDoctorByPhone(phone: string): Promise<Doctor> {
         return await this.doctorRepository.findOneBy({ phone: phone })
     }
 

@@ -4,12 +4,12 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-export class DoctorStrategy extends PassportStrategy(Strategy, 'doctor') {
+export class UserStrategy extends PassportStrategy(Strategy, 'user') {
     constructor() {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.DOCTOR_SECRET,
+            secretOrKey: process.env.USER_SECRET,
         })
     }
 

@@ -3,6 +3,7 @@ import { DoctorModule } from './doctor/doctor.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresOption } from './config/database.config';
 import { AuthModule } from './auth/auth.module';
+import { FeedbackModule } from './review/feedback.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { AuthModule } from './auth/auth.module';
       autoLoadEntities: true
     }),
     AuthModule,
-    DoctorModule
+    DoctorModule,
+    FeedbackModule
   ],
 })
 export class AppModule { }
