@@ -11,6 +11,8 @@ export class PublicController {
     @ApiOperation({ summary: 'Xem thông tin cơ bản của tất cả bác sĩ' })
     @Get('public')
     async averageRateForAllDoctor() {
-        return await this.feedbackService.getAverageRatingForAllDoctors()
+        return {
+            data: await this.feedbackService.getAverageRatingForAllDoctors()
+        }
     }
 }
