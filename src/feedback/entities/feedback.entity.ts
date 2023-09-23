@@ -20,7 +20,7 @@ export class DoctorRates {
     @Max(5)
     rated: number
 
-    @ManyToOne(() => Doctor, e => e.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Doctor, e => e.rated, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'doctor' })
     doctor: Doctor
 

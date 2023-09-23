@@ -1,7 +1,8 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
 import { Specialty } from "../../config/enum.constants";
-import { DoctorRates } from "../../review/entities/feedback.entity";
+import { DoctorRates } from "../../feedback/entities/feedback.entity";
+import { DoctorSchedules } from "src/schedule/entities/schedule.entity";
 
 @Entity({ name: 'Doctors' })
 export class Doctor {
@@ -35,6 +36,9 @@ export class Doctor {
 
     @OneToMany(() => DoctorRates, e => e.doctor)
     rated: DoctorRates[]
+
+    @OneToMany(() => DoctorSchedules, e => e.doctor)
+    schedules: DoctorSchedules[]
 
     @Column({ name: 'account_balance', default: 0 })
     accout_balance: number

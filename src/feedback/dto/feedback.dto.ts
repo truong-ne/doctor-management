@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, Min, Max } from "class-validator";
 
-export class DoctorRateDto {
+export class FeedbackDto {
     @IsNotEmpty()
     @Min(0)
     @Max(5)

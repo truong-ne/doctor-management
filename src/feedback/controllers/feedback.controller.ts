@@ -2,7 +2,7 @@ import { Controller, Patch, Post, Get, UseGuards, Req, Body } from "@nestjs/comm
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UserGuard } from "../../auth/guards/user.guard"
 import { FeedbackService } from "../services/feedback.service";
-import { DoctorRateDto } from "../dto/feedback.dto";
+import { FeedbackDto } from "../dto/feedback.dto";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags('EVULATED')
@@ -13,17 +13,25 @@ export class FeedbackController {
     ) { }
 
     @ApiOperation({ summary: 'Đánh giá của người dùng dành cho bác sĩ sau cuộc hẹn video call' })
+    @ApiResponse({ status: 201, description: "Thành công" })
     @ApiBearerAuth()
     @UseGuards(UserGuard)
     @Post()
     async DoctorRate(
         @Req() req,
-        @Body() dto: DoctorRateDto
+        @Body() dto: FeedbackDto
     ): Promise<any> {
         const data = await this.feedbackService.doctorRated(req.user.id, dto.rating, dto.doctor_id, dto.feedback)
 
         return {
-            data: data
+            data: {
+                rated: data.rated,
+                doctor: {
+                    full_name: data.doctor.full_name,
+                    specialty: data.doctor.specialty
+                },
+                feedback: data.feedback
+            }
         }
     }
 
@@ -43,11 +51,5 @@ export class FeedbackController {
                 averageRating: rated.data.averageRating
             }
         }
-    }
-
-    @ApiOperation({ summary: 'Xem thông tin cơ bản của tất cả bác sĩ' })
-    @Get('public')
-    async averageRateForAllDoctor() {
-        return await this.feedbackService.getAverageRatingForAllDoctors()
     }
 }
