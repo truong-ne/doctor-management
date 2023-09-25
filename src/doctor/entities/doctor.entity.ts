@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
 import { Specialty } from "../../config/enum.constants";
-import { DoctorRates } from "../../feedback/entities/feedback.entity";
 import { DoctorSchedules } from "src/schedule/entities/schedule.entity";
+import { Min } from "class-validator";
 
 @Entity({ name: 'Doctors' })
 export class Doctor {
@@ -15,9 +15,6 @@ export class Doctor {
 
     @Column()
     phone: string
-
-    @Column({ type: 'enum', enum: Specialty })
-    specialty: string
 
     @Column()
     password: string
@@ -34,19 +31,26 @@ export class Doctor {
     @Column({ nullable: true })
     biography: string
 
-    @OneToMany(() => DoctorRates, e => e.doctor)
-    rated: DoctorRates[]
+    @Column({ type: 'enum', enum: Specialty })
+    specialty: string
+
+    @Column({ name: 'account_balance', default: 0 })
+    @Min(0)
+    accout_balance: number
+
+    @Column()
+    experience: number
+
+    @Column()
+    @Min(0)
+    fee_per_munites: number
 
     @OneToMany(() => DoctorSchedules, e => e.doctor)
     schedules: DoctorSchedules[]
-
-    @Column({ name: 'account_balance', default: 0 })
-    accout_balance: number
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
 
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
-
 }

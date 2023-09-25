@@ -14,7 +14,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     }),
     AuthModule,
     DoctorModule,
-    FeedbackModule,
+    // FeedbackModule,
     ScheduleModule
   ],
 })
