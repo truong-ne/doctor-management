@@ -42,6 +42,7 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async updateImage(dto: UpdateImageProfile, id: string): Promise<any> {
+
         const doctor = await this.findDoctorById(id)
 
         doctor.avatar = dto.avatar
