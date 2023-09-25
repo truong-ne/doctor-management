@@ -25,9 +25,9 @@ export class DoctorController {
         return await this.doctorService.signup(dto)
     }
 
+    @UseGuards(DoctorGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Thay đổi avatar của bác sĩ' })
-    @UseGuards(DoctorGuard)
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai đầu vào' })
     @Patch('avatar')
@@ -38,9 +38,9 @@ export class DoctorController {
         return await this.doctorService.updateImage(dto, req.user.id)
     }
 
+    @UseGuards(DoctorGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Thay đổi biography của bác sĩ' })
-    @UseGuards(DoctorGuard)
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai đầu vào' })
     @Patch('biography')
