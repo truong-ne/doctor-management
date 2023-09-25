@@ -12,10 +12,10 @@ export class FeedbackController {
         private readonly feedbackService: FeedbackService
     ) { }
 
+    @UseGuards(UserGuard)
     @ApiOperation({ summary: 'Đánh giá của người dùng dành cho bác sĩ sau cuộc hẹn video call' })
     @ApiResponse({ status: 201, description: "Thành công" })
     @ApiBearerAuth()
-    @UseGuards(UserGuard)
     @Post()
     async DoctorRate(
         @Req() req,
@@ -35,10 +35,10 @@ export class FeedbackController {
         }
     }
 
+    @UseGuards(DoctorGuard)
     @ApiOperation({ summary: 'Bác sĩ xem tất cả đánh giá và góp ý của khách hàng' })
     @ApiBearerAuth()
     @ApiResponse({ status: 200, description: 'Thành công' })
-    @UseGuards(DoctorGuard)
     @Get()
     async avaragaRateForDoctor(
         @Req() req
