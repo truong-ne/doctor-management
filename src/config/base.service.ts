@@ -3,7 +3,6 @@ import * as bcrypt from 'bcrypt'
 
 export abstract class BaseService<T> {
     constructor(protected readonly repoditory: Repository<T>) {
-
     }
 
     VNTime(n = 0) {

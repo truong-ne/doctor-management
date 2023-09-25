@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { DoctorSchedules } from "../entities/schedule.entity";
 
 @Injectable()
-export class FeedbackService extends BaseService<DoctorSchedules> {
+export class ScheduleService extends BaseService<DoctorSchedules> {
     constructor(
         @InjectRepository(DoctorSchedules) private readonly scheduleRepository: Repository<DoctorSchedules>
     ) {

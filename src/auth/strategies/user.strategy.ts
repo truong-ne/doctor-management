@@ -1,6 +1,7 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt"
 import * as dotenv from 'dotenv'
+import { UnauthorizedException } from "@nestjs/common";
 
 dotenv.config()
 

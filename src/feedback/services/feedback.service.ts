@@ -59,6 +59,7 @@ export class FeedbackService extends BaseService<DoctorRates> {
                 avatar: doctor.avatar,
                 name: doctor.full_name,
                 specialty: doctor.specialty,
+                biography: doctor.biography,
                 averageRating: parseFloat(averageRating.averageRating) || 0,
                 reviewed: await this.feedbackRepository.count({
                     where: { doctor: doctor }
@@ -83,9 +84,11 @@ export class FeedbackService extends BaseService<DoctorRates> {
             doctors.map(async (doctor) => {
                 const averageRating = await this.getAverageRatingByDoctorId(doctor.doctorId);
                 return {
+                    id: doctor.doctorId,
                     avatar: averageRating.data.avatar,
                     name: averageRating.data.name,
                     specialty: averageRating.data.specialty,
+                    biography: averageRating.data.biography,
                     averageRating: averageRating.data.averageRating,
                     reviewed: averageRating.data.reviewed
                 }
