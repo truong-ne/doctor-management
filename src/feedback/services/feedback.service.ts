@@ -84,7 +84,6 @@ export class FeedbackService extends BaseService<DoctorRates> {
             doctors.map(async (doctor) => {
                 const averageRating = await this.getAverageRatingByDoctorId(doctor.doctorId);
                 return {
-                    id: doctor.doctorId,
                     avatar: averageRating.data.avatar,
                     name: averageRating.data.name,
                     specialty: averageRating.data.specialty,
