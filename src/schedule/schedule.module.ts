@@ -4,7 +4,7 @@ import { DoctorSchedules } from './entities/schedule.entity';
 import { SchedulesService } from './services/schedule.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulesController } from './controllers/schedule.controller';
-import { DoctorModule } from 'src/doctor/doctor.module';
+import { DoctorModule } from '../doctor/doctor.module';
 
 @Module({
     imports: [
