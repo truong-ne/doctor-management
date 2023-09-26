@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
 import { Specialty } from "../../config/enum.constants";
-import { DoctorSchedules } from "src/schedule/entities/schedule.entity";
+import { DoctorSchedules } from "../../schedule/entities/schedule.entity";
 import { Min } from "class-validator";
 
 @Entity({ name: 'Doctors' })

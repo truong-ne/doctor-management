@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
-import { Doctor } from "src/doctor/entities/doctor.entity";
+import { Doctor } from "../../doctor/entities/doctor.entity";
 
 @Entity({ name: 'DoctorSchedules' })
 export class DoctorSchedules {
@@ -11,14 +11,17 @@ export class DoctorSchedules {
     @PrimaryColumn()
     id: string
 
-    @Column({ type: 'date' })
-    date: Date;
+    @Column()
+    day: number
 
-    @Column({ type: 'time', name: 'start_time' })
-    startTime: Date;
+    @Column()
+    month: number
 
-    @Column({ type: 'time', name: 'end_time' })
-    endTime: Date;
+    @Column()
+    year: number
+
+    @Column({ name: 'working_times' })
+    workingTimes: string;
 
     @ManyToOne(() => Doctor, e => e.schedules, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'doctor' })

@@ -3,7 +3,6 @@ import { DoctorModule } from './doctor/doctor.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresOption } from './config/database.config';
 import { AuthModule } from './auth/auth.module';
-import { FeedbackModule } from './feedback/feedback.module';
 import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
@@ -14,7 +13,6 @@ import { ScheduleModule } from './schedule/schedule.module';
     }),
     AuthModule,
     DoctorModule,
-    // FeedbackModule,
     ScheduleModule
   ],
 })
