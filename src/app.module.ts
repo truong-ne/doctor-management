@@ -3,7 +3,7 @@ import { DoctorModule } from './doctor/doctor.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresOption } from './config/database.config';
 import { AuthModule } from './auth/auth.module';
-import { ScheduleModule } from './schedule/schedule.module';
+import { SchedulesModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     }),
     AuthModule,
     DoctorModule,
-    ScheduleModule
+    SchedulesModule
   ],
 })
 export class AppModule { }

@@ -20,7 +20,7 @@ export class DoctorSchedules {
     @Column()
     year: number
 
-    @Column({ name: 'working_times' })
+    @Column({ name: 'working_times', nullable: true })
     workingTimes: string;
 
     @ManyToOne(() => Doctor, e => e.schedules, { onDelete: 'CASCADE' })

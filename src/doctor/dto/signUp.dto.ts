@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsMobilePhone, IsEnum, IsStrongPassword } from "class-validator";
+import { IsNotEmpty, IsString, IsMobilePhone, IsEnum, IsStrongPassword, Min } from "class-validator";
 import { Specialty } from "../../config/enum.constants";
 
 export class SignUpDto {
@@ -22,4 +22,14 @@ export class SignUpDto {
     @IsEnum(Specialty)
     @ApiProperty({ example: 'gynaecologist' })
     specialty!: string
+
+    @IsNotEmpty()
+    @Min(0)
+    @ApiProperty({ example: 5 })
+    experience: number
+
+    @IsNotEmpty()
+    @Min(0)
+    @ApiProperty({ example: 20 })
+    fee_per_minutes: number
 }

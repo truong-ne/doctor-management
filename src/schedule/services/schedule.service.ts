@@ -1,49 +1,109 @@
-import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
-import { Repository } from "typeorm";
+import { Between, LessThan, LessThanOrEqual, Repository } from "typeorm";
 import { DoctorSchedules } from "../entities/schedule.entity";
+import { DoctorService } from "../../doctor/services/doctor.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
-export class ScheduleService extends BaseService<DoctorSchedules> {
+export class SchedulesService extends BaseService<DoctorSchedules> {
     constructor(
-        @InjectRepository(DoctorSchedules) private readonly scheduleRepository: Repository<DoctorSchedules>
+        @InjectRepository(DoctorSchedules) private readonly schedulesRepository: Repository<DoctorSchedules>,
+        @Inject(DoctorService) private readonly doctorService: DoctorService
     ) {
-        super(scheduleRepository)
+        super(schedulesRepository)
     }
 
-    async createSchedule() {
-        const schedule = new DoctorSchedules()
-        schedule.day = 1
-        schedule.month = 1
-        schedule.year = 2023
-        schedule.workingTimes = '9-10|22-23'
-
-        await this.scheduleRepository.save(schedule)
-
-        return "TRUE"
+    @Cron(CronExpression.EVERY_30_MINUTES_BETWEEN_9AM_AND_6PM)
+    async handleSchedules() {
+        console.log('Running ensureSchedulesForDoctors every 30 minutes betwwen 9AM - 6PM')
+        await this.ensureSchedulesForDoctors()
     }
 
-    async getAllDayInMonth(): Promise<{ day: number; month: number; year: number, startTime: number, endTime: number }[]> {
+    @Cron(CronExpression.EVERY_DAY_AT_9AM)
+    async deleteSchedules() {
+        console.log('Running deleteSchedules every day at 9AM')
+        await this.schedulesToDelete()
+    }
+
+    async ensureSchedulesForDoctors() {
         const today = this.VNTime();
-        const year = today.getUTCFullYear();
-        const month = today.getUTCMonth();
-        const daysInMonth: { day: number; month: number; year: number; startTime: number, endTime: number }[] = [];
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + 14);
 
-        const startDate = new Date(Date.UTC(year, month, today.getDate()));
+        const doctors = await this.doctorService.findAllDoctor();
 
-        const endDate = new Date(Date.UTC(year, month, today.getDate() + 14));
-
-        for (let date = new Date(startDate); date <= endDate; date.setUTCDate(date.getUTCDate() + 1)) {
-            daysInMonth.push({
-                day: date.getUTCDate(),
-                month: date.getUTCMonth() + 1,
-                year: date.getUTCFullYear(),
-                startTime: today.getHours(),
-                endTime: today.getUTCHours() + 15
+        for (let doctor of doctors) {
+            const existingSchedules = await this.schedulesRepository.count({
+                where: {
+                    id: doctor.id,
+                    day: Between(today.getUTCDate(), endDate.getUTCDate()),
+                    month: today.getUTCMonth() + 1,
+                    year: today.getUTCFullYear(),
+                },
             });
-        }
 
-        return daysInMonth;
+            const numberOfDays = 14
+
+            if (existingSchedules < numberOfDays) {
+                const schedulesToCreate = [];
+
+                for (let i = 0; i < numberOfDays; i++) {
+                    const currentDate = new Date(today);
+                    currentDate.setDate(today.getDate() + i);
+
+                    const scheduleExists = await this.schedulesRepository.findOne({
+                        where: {
+                            doctor: doctor,
+                            day: currentDate.getUTCDate(),
+                            month: currentDate.getUTCMonth() + 1,
+                            year: currentDate.getUTCFullYear(),
+                        }
+                    });
+
+                    if (!scheduleExists) {
+                        const schedule = new DoctorSchedules();
+                        schedule.doctor = doctor;
+                        schedule.day = currentDate.getUTCDate();
+                        schedule.month = currentDate.getUTCMonth() + 1;
+                        schedule.year = currentDate.getUTCFullYear();
+
+                        schedulesToCreate.push(schedule);
+                    }
+                }
+
+                await this.schedulesRepository.save(schedulesToCreate);
+
+                console.log(`Created schedules for Doctor ${doctor.id}`);
+            }
+        }
+    }
+
+    async schedulesToDelete() {
+        const today = this.VNTime()
+
+        const schedulesToDelete = await this.schedulesRepository.find({
+            where: [
+                {
+                    year: LessThan(today.getUTCFullYear())
+                },
+                {
+                    year: LessThanOrEqual(today.getUTCFullYear()),
+                    month: LessThan(today.getUTCMonth() + 1)
+                },
+                {
+                    year: LessThanOrEqual(today.getUTCFullYear()),
+                    month: LessThanOrEqual(today.getUTCMonth() + 1),
+                    day: LessThan(today.getUTCDate())
+                }
+            ]
+        })
+
+        console.log(schedulesToDelete)
+
+        if (schedulesToDelete && schedulesToDelete.length > 0) {
+            await this.schedulesRepository.remove(schedulesToDelete)
+        }
     }
 }

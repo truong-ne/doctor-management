@@ -25,6 +25,8 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.phone = dto.phone
         doctor.specialty = dto.specialty
         doctor.password = await this.hashing(dto.password)
+        doctor.experience = dto.experience
+        doctor.fee_per_minutes = dto.fee_per_minutes
         doctor.created_at = this.VNTime()
         doctor.updated_at = doctor.created_at
 
@@ -35,7 +37,9 @@ export class DoctorService extends BaseService<Doctor> {
                 id: doctor.id,
                 full_name: doctor.full_name,
                 phone: doctor.phone,
-                specialty: doctor.specialty
+                specialty: doctor.specialty,
+                experience: doctor.experience,
+                fee_per_minutes: doctor.fee_per_minutes
             },
             message: "succesfully"
         }
@@ -86,5 +90,11 @@ export class DoctorService extends BaseService<Doctor> {
         } catch (error) {
             throw new NotFoundException()
         }
+    }
+
+    async findAllDoctor(): Promise<Doctor[]> {
+        return await this.doctorRepository.find({
+            select: ['id']
+        })
     }
 }

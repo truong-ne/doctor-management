@@ -38,12 +38,13 @@ export class Doctor {
     @Min(0)
     accout_balance: number
 
-    @Column()
+    @Column({ default: 0 })
+    @Min(0)
     experience: number
 
-    @Column()
+    @Column({ default: 0 })
     @Min(0)
-    fee_per_munites: number
+    fee_per_minutes: number
 
     @OneToMany(() => DoctorSchedules, e => e.doctor)
     schedules: DoctorSchedules[]

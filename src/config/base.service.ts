@@ -29,4 +29,15 @@ export abstract class BaseService<T> {
         return await bcrypt.compare(password, hash)
     }
 
+    async arrayToString(arr: number[]): Promise<string> {
+        const sortedArray = [...arr].sort((a, b) => a - b)
+        return sortedArray.join('-')
+    }
+
+    async stringToArray(str: string): Promise<number[]> {
+        const numberArray = str.split('-').map(Number)
+        const sortedArray = [...numberArray].sort((a, b) => a - b)
+        return sortedArray
+    }
+
 }
