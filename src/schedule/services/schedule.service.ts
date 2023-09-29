@@ -15,7 +15,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         super(schedulesRepository)
     }
 
-    @Cron(CronExpression.EVERY_30_MINUTES_BETWEEN_9AM_AND_6PM)
+    @Cron(CronExpression.EVERY_DAY_AT_9PM)
     async handleSchedules() {
         console.log('Running ensureSchedulesForDoctors every 30 minutes betwwen 9AM - 6PM')
         await this.ensureSchedulesForDoctors()
