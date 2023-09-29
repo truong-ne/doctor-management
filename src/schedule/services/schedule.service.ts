@@ -1,4 +1,4 @@
-import { Injectable, Inject } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { Between, LessThan, LessThanOrEqual, Repository } from "typeorm";
@@ -104,6 +104,19 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
 
         if (schedulesToDelete && schedulesToDelete.length > 0) {
             await this.schedulesRepository.remove(schedulesToDelete)
+        }
+    }
+
+    async scheduleByDoctorId(id: string): Promise<any> {
+        const doctor = await this.doctorService.findDoctorById(id)
+        if (!doctor) {
+            throw new NotFoundException('schedules_not_found')
+        }
+
+        return {
+            data: await this.schedulesRepository.find({
+                where: { doctor: doctor }
+            })
         }
     }
 }
