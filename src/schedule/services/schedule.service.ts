@@ -70,6 +70,8 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
                         schedule.month = currentDate.getUTCMonth() + 1;
                         schedule.year = currentDate.getUTCFullYear();
 
+                        const fixedTimes = await this.fixedStringToArray(doctor.fixed_times)
+                        schedule.workingTimes = await this.arrayToString(fixedTimes[currentDate.getUTCDay()])
                         schedulesToCreate.push(schedule);
                     }
                 }

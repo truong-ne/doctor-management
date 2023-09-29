@@ -4,7 +4,7 @@ import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
-import { UpdateBiograpyProfile, UpdateImageProfile } from "../dto/updateProfile";
+import { UpdateBiograpyProfile, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 
 @Injectable()
 export class DoctorService extends BaseService<Doctor> {
@@ -27,6 +27,7 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.password = await this.hashing(dto.password)
         doctor.experience = dto.experience
         doctor.fee_per_minutes = dto.fee_per_minutes
+        doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
         doctor.created_at = this.VNTime()
         doctor.updated_at = doctor.created_at
 
@@ -39,7 +40,8 @@ export class DoctorService extends BaseService<Doctor> {
                 phone: doctor.phone,
                 specialty: doctor.specialty,
                 experience: doctor.experience,
-                fee_per_minutes: doctor.fee_per_minutes
+                fee_per_minutes: doctor.fee_per_minutes,
+                fixed_times: doctor.fixed_times
             },
             message: "succesfully"
         }
@@ -56,6 +58,20 @@ export class DoctorService extends BaseService<Doctor> {
         return {
             data: {
                 avatar: doctor.avatar
+            },
+            message: "successfully"
+        }
+    }
+
+    async updatedFixedTime(dto: UpdateFixedTime, id: string): Promise<any> {
+        const doctor = await this.findDoctorById(id)
+
+        doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
+
+        await this.doctorRepository.save(doctor)
+        return {
+            data: {
+                fixed_times: doctor.fixed_times
             },
             message: "successfully"
         }
@@ -94,7 +110,7 @@ export class DoctorService extends BaseService<Doctor> {
 
     async findAllDoctor(): Promise<Doctor[]> {
         return await this.doctorRepository.find({
-            select: ['id']
+            select: ['id', 'fixed_times']
         })
     }
 }

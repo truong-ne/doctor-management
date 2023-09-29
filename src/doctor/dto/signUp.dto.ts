@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsMobilePhone, IsEnum, IsStrongPassword, Min } from "class-validator";
+import { IsNotEmpty, IsString, IsMobilePhone, IsEnum, IsStrongPassword, Min, IsArray } from "class-validator";
 import { Specialty } from "../../config/enum.constants";
 
 export class SignUpDto {
@@ -32,4 +32,9 @@ export class SignUpDto {
     @Min(0)
     @ApiProperty({ example: 20 })
     fee_per_minutes: number
+
+    @IsNotEmpty()
+    @IsArray()
+    @ApiProperty({ example: [[15, 16, 17, 18], [31, 32, 32, 34], [], [], [], [], [19, 20, 21, 22]] })
+    fixed_times: any
 }

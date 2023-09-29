@@ -46,6 +46,9 @@ export class Doctor {
     @Min(0)
     fee_per_minutes: number
 
+    @Column({ name: 'fixed_times', nullable: true })
+    fixed_times: string
+
     @OneToMany(() => DoctorSchedules, e => e.doctor)
     schedules: DoctorSchedules[]
 

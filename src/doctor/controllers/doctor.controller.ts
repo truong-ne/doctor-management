@@ -1,6 +1,6 @@
 import { Body, Controller, Patch, Post, Get, UseGuards, Req } from "@nestjs/common";
 import { DoctorService } from "../services/doctor.service";
-import { UpdateBiograpyProfile, UpdateImageProfile } from "../dto/updateProfile";
+import { UpdateBiograpyProfile, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { SignUpDto } from "../dto/signUp.dto";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -27,6 +27,19 @@ export class DoctorController {
 
     @UseGuards(DoctorGuard)
     @ApiBearerAuth()
+    @ApiOperation({ summary: 'Thay đổi biography của bác sĩ' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'Sai đầu vào' })
+    @Patch('biography')
+    async updateBiographyProfile(
+        @Body() dto: UpdateBiograpyProfile,
+        @Req() req
+    ): Promise<any> {
+        return await this.doctorService.updateBiography(dto, req.user.id)
+    }
+
+    @UseGuards(DoctorGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Thay đổi avatar của bác sĩ' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai đầu vào' })
@@ -40,14 +53,14 @@ export class DoctorController {
 
     @UseGuards(DoctorGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Thay đổi biography của bác sĩ' })
+    @ApiOperation({ summary: 'Thay đổi thời gian làm việc cố định của bác sĩ' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai đầu vào' })
-    @Patch('biography')
-    async updateBiographyProfile(
-        @Body() dto: UpdateBiograpyProfile,
+    @Patch('fixed-times')
+    async updateFixedTimes(
+        @Body() dto: UpdateFixedTime,
         @Req() req
     ): Promise<any> {
-        return await this.doctorService.updateBiography(dto, req.user.id)
+        return await this.doctorService.updatedFixedTime(dto, req.user.id)
     }
 }
