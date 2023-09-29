@@ -119,4 +119,22 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
             })
         }
     }
+
+    async updateWorkingTime(arr: number[], id: string): Promise<any> {
+        const schedule = await this.schedulesRepository.findOne({
+            where: { id: id }
+        })
+
+        if (!schedule) {
+            throw new NotFoundException('schedule_not_found')
+        }
+
+        schedule.workingTimes = await this.arrayToString(arr)
+
+        await this.schedulesRepository.save(schedule)
+        return {
+            data: { schedule },
+            message: "successfully"
+        }
+    }
 }
