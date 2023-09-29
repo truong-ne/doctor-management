@@ -12,6 +12,7 @@ export class SchedulesController {
     ) { }
 
     @UseGuards(DoctorGuard)
+    @ApiBearerAuth()
     @UseInterceptors(CacheInterceptor)
     @Get()
     async schedulesByDoctorId(
