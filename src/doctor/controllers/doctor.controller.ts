@@ -50,9 +50,4 @@ export class DoctorController {
     ): Promise<any> {
         return await this.doctorService.updateBiography(dto, req.user.id)
     }
-
-    @Post('test')
-    async test() {
-        return "TEST"
-    }
 }
