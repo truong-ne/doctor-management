@@ -30,6 +30,8 @@ export abstract class BaseService<T> {
     }
 
     async arrayToString(arr: number[]): Promise<string> {
+        if (!arr)
+            return '-1'
         const sortedArray = [...arr].sort((a, b) => a - b)
         return sortedArray.join('-')
     }

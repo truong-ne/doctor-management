@@ -13,6 +13,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         @Inject(DoctorService) private readonly doctorService: DoctorService
     ) {
         super(schedulesRepository)
+        this.ensureSchedulesForDoctors()
     }
 
     @Cron(CronExpression.EVERY_DAY_AT_9PM)
@@ -115,7 +116,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
 
         return {
             data: await this.schedulesRepository.find({
-                where: { doctor: doctor }
+                where: { doctor: doctor },
             })
         }
     }
