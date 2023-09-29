@@ -20,4 +20,9 @@ export class SchedulesController {
     ): Promise<any> {
         return await this.schedulesService.scheduleByDoctorId(req.user.id)
     }
+
+    @Post()
+    async testProxy() {
+        return "HAHAHA"
+    }
 }
