@@ -2,7 +2,9 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from 
 import { Observable, from, map } from "rxjs";
 import { Server } from 'ws'
 
-@WebSocketGateway(8080)
+@WebSocketGateway(8080, {
+    cors: '*'
+})
 export class ScheduleGateway {
     @WebSocketServer()
     server: Server
