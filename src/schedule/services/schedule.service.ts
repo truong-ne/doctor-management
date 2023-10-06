@@ -13,7 +13,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         @Inject(DoctorService) private readonly doctorService: DoctorService
     ) {
         super(schedulesRepository)
-        this.ensureSchedulesForDoctors()
+        this.scheduleByDoctorId('i04S--EbOJxBjsAEAvz9Y')
     }
 
     @Cron(CronExpression.EVERY_DAY_AT_8AM)
@@ -114,10 +114,22 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
             throw new NotFoundException('schedules_not_found')
         }
 
-        return {
-            data: await this.schedulesRepository.find({
-                where: { doctor: doctor },
+        const schedules = await this.schedulesRepository.find({
+            where: { doctor: doctor }
+        })
+
+        const data = []
+
+        schedules.forEach(schedule => {
+            data.push({
+                id: schedule.id,
+                date: schedule.day + '/' + schedule.month + '/' + schedule.year,
+                working_times: schedule.workingTimes
             })
+        })
+
+        return {
+            data: data
         }
     }
 
