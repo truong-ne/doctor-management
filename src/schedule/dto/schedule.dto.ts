@@ -8,5 +8,5 @@ export class UpdateSchedule {
     schedule_id: string
 
     @ApiProperty({ example: [14, 15, 16, 17] })
-    workingTime: number[]
+    working_times: number[]
 }

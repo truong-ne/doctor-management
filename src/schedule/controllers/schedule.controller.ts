@@ -30,6 +30,6 @@ export class SchedulesController {
     async updateSchedule(
         @Body() dto: UpdateSchedule
     ): Promise<any> {
-        return await this.schedulesService.updateWorkingTime(dto.workingTime, dto.schedule_id)
+        return await this.schedulesService.updateWorkingTime(dto.working_times, dto.schedule_id)
     }
 }
