@@ -5,7 +5,7 @@ import { Specialty } from "../../config/enum.constants";
 export class SignUpDto {
     @IsNotEmpty()
     @IsMobilePhone()
-    @ApiProperty({ example: '0917068366' })
+    @ApiProperty({ example: '+84917068366' })
     phone: string
 
     @IsNotEmpty()
