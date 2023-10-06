@@ -16,13 +16,13 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         this.ensureSchedulesForDoctors()
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_9PM)
+    @Cron(CronExpression.EVERY_DAY_AT_8AM)
     async handleSchedules() {
-        console.log('Running ensureSchedulesForDoctors day at 9PM')
+        console.log('Running ensureSchedulesForDoctors day at 8AM')
         await this.ensureSchedulesForDoctors()
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_9AM)
+    @Cron(CronExpression.EVERY_DAY_AT_8AM)
     async deleteSchedules() {
         console.log('Running deleteSchedules every day at 9AM')
         await this.schedulesToDelete()
@@ -102,8 +102,6 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
                 }
             ]
         })
-
-        console.log(schedulesToDelete)
 
         if (schedulesToDelete && schedulesToDelete.length > 0) {
             await this.schedulesRepository.remove(schedulesToDelete)
