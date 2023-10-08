@@ -1,26 +1,36 @@
-import { Body, Controller, Patch, Post, Get, UseGuards, Req, UseInterceptors, Param } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Post, Get, UseGuards, Req, Inject } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SchedulesService } from "../services/schedule.service";
 import { DoctorGuard } from "src/auth/guards/doctor.guard";
-import { CacheInterceptor } from "@nestjs/cache-manager";
 import { UpdateSchedule } from "../dto/schedule.dto";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
 
 @ApiTags('SCHEDULE')
 @Controller('schedule')
 export class SchedulesController {
     constructor(
-        private readonly schedulesService: SchedulesService
-    ) { }
+        private readonly schedulesService: SchedulesService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
+    ) {
+
+    }
 
     @UseGuards(DoctorGuard)
     @ApiBearerAuth()
-    @UseInterceptors(CacheInterceptor)
     @ApiOperation({ summary: "Lấy tất cả thông tin lịch trình của bác sĩ" })
     @Get()
     async schedulesByDoctorId(
         @Req() req
     ): Promise<any> {
-        return await this.schedulesService.scheduleByDoctorId(req.user.id)
+        const cacheSchedules = await this.cacheManager.get('schedules-' + req.user.id);
+        if (cacheSchedules) return cacheSchedules
+
+        const data = await this.schedulesService.scheduleByDoctorId(req.user.id)
+
+        await this.cacheManager.set('schedules-' + req.user.id, data)
+
+        return data
     }
 
     @UseGuards(DoctorGuard)

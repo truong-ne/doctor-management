@@ -11,7 +11,6 @@ import { DoctorModule } from '../doctor/doctor.module';
     imports: [
         TypeOrmModule.forFeature([DoctorSchedules]),
         ScheduleModule.forRoot(),
-        CacheModule.register(),
         DoctorModule
     ],
     controllers: [SchedulesController],

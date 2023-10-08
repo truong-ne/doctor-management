@@ -13,7 +13,6 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         @Inject(DoctorService) private readonly doctorService: DoctorService
     ) {
         super(schedulesRepository)
-        this.scheduleByDoctorId('i04S--EbOJxBjsAEAvz9Y')
     }
 
     @Cron(CronExpression.EVERY_DAY_AT_8AM)
