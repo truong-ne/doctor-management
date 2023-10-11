@@ -16,7 +16,7 @@
   "crons": [
     {
       "path": "/config/cron",
-      "schedule": "0 3 * * *"
+      "schedule": "* * * * *"
     }
   ]
 }
