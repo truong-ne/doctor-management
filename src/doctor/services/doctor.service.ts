@@ -113,4 +113,16 @@ export class DoctorService extends BaseService<Doctor> {
             select: ['id', 'fixed_times']
         })
     }
+
+    async profileDoctor(doctor_id): Promise<any> {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: doctor_id },
+        })
+
+        const { password, ...data } = { ...doctor }
+
+        return {
+            data: data
+        }
+    }
 }
