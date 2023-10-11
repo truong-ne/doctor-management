@@ -1,6 +1,6 @@
 import { Body, Controller, Patch, Post, Get, UseGuards, Req, Inject } from "@nestjs/common";
 import { DoctorService } from "../services/doctor.service";
-import { UpdateBiograpyProfile, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { SignUpDto } from "../dto/signUp.dto";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -60,6 +60,21 @@ export class DoctorController {
         await this.cacheManager.del('doctor-' + req.user.id)
 
         return await this.doctorService.updateBiography(dto, req.user.id)
+    }
+
+    @UseGuards(DoctorGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Thay đổi email của bác sĩ' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'Sai đầu vào' })
+    @Patch('emails')
+    async updateEmail(
+        @Body() dto: UpdateEmail,
+        @Req() req
+    ): Promise<any> {
+        await this.cacheManager.del('doctor-' + req.user.id)
+
+        return await this.doctorService.updateEmail(dto, req.user.id)
     }
 
     @UseGuards(DoctorGuard)

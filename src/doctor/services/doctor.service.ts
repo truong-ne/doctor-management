@@ -4,7 +4,7 @@ import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
-import { UpdateBiograpyProfile, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 
 @Injectable()
 export class DoctorService extends BaseService<Doctor> {
@@ -91,6 +91,23 @@ export class DoctorService extends BaseService<Doctor> {
                 biography: doctor.biography
             },
             message: "successfully"
+        }
+    }
+
+    async updateEmail(dto: UpdateEmail, id: string): Promise<any> {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: id }
+        })
+
+        doctor.email = dto.email
+
+        await this.doctorRepository.save(doctor)
+
+        return {
+            data: {
+                email: doctor.email
+            },
+            message: 'successfully'
         }
     }
 

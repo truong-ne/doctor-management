@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class UpdateImageProfile {
     @IsNotEmpty()
@@ -18,4 +18,10 @@ export class UpdateFixedTime {
     @IsArray()
     @ApiProperty({ example: [[15, 16, 17, 18], [31, 32, 32, 34], [], [], [], [], [19, 20, 21, 22]] })
     fixed_times: any
+}
+
+export class UpdateEmail {
+    @IsNotEmpty()
+    @IsEmail()
+    email: string
 }
