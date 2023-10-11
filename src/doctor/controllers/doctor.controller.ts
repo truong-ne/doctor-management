@@ -16,6 +16,7 @@ export class DoctorController {
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
+    @UseGuards(DoctorGuard)
     @ApiOperation({ summary: 'Lấy thông tin tài khoản bác sĩ' })
     @ApiBearerAuth()
     @ApiResponse({ status: 200, description: 'Lấy thông tin tài khoản thành công' })
