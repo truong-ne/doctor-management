@@ -4,7 +4,6 @@ import { BaseService } from "../../config/base.service";
 import { Between, LessThan, LessThanOrEqual, Repository } from "typeorm";
 import { DoctorSchedules } from "../entities/schedule.entity";
 import { DoctorService } from "../../doctor/services/doctor.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class SchedulesService extends BaseService<DoctorSchedules> {
@@ -13,18 +12,6 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         @Inject(DoctorService) private readonly doctorService: DoctorService
     ) {
         super(schedulesRepository)
-    }
-
-    @Cron(CronExpression.EVERY_DAY_AT_8AM)
-    async handleSchedules() {
-        console.log('Running ensureSchedulesForDoctors day at 8AM')
-        await this.ensureSchedulesForDoctors()
-    }
-
-    @Cron(CronExpression.EVERY_DAY_AT_8AM)
-    async deleteSchedules() {
-        console.log('Running deleteSchedules every day at 9AM')
-        await this.schedulesToDelete()
     }
 
     async ensureSchedulesForDoctors() {

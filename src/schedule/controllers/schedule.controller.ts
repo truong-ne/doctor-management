@@ -42,4 +42,12 @@ export class SchedulesController {
     ): Promise<any> {
         return await this.schedulesService.updateWorkingTime(dto.working_times, dto.schedule_id)
     }
+
+    @Get('cron')
+    async cronJob() {
+        await this.schedulesService.ensureSchedulesForDoctors()
+        await this.schedulesService.schedulesToDelete()
+
+        return "schedule cron job"
+    }
 }
