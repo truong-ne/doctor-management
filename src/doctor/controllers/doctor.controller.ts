@@ -67,7 +67,7 @@ export class DoctorController {
     @ApiOperation({ summary: 'Thay đổi email của bác sĩ' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai đầu vào' })
-    @Patch('emails')
+    @Patch('email')
     async updateEmail(
         @Body() dto: UpdateEmail,
         @Req() req
