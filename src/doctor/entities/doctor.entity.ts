@@ -36,7 +36,7 @@ export class Doctor {
 
     @Column({ name: 'account_balance', default: 0 })
     @Min(0)
-    accout_balance: number
+    account_balance: number
 
     @Column({ default: 0 })
     @Min(0)
