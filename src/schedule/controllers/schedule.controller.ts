@@ -38,8 +38,11 @@ export class SchedulesController {
     @ApiOperation({ summary: "Cập nhật thông tin thời gian làm việc của từng ngày cụ thể" })
     @Post()
     async updateSchedule(
-        @Body() dto: UpdateSchedule
+        @Body() dto: UpdateSchedule,
+        @Req() req
     ): Promise<any> {
+        await this.cacheManager.del('schedules-' + req.user.id);
+
         return await this.schedulesService.updateWorkingTime(dto.working_times, dto.schedule_id)
     }
 
