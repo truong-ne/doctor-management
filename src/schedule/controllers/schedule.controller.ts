@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Get, UseGuards, Req, Inject } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SchedulesService } from "../services/schedule.service";
-import { DoctorGuard } from "src/auth/guards/doctor.guard";
+import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UpdateSchedule } from "../dto/schedule.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
