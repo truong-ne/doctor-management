@@ -46,7 +46,7 @@ export class SchedulesController {
         return await this.schedulesService.updateWorkingTime(dto.working_times, dto.schedule_id)
     }
 
-    @Get('cron')
+    @Post('cron')
     async cronJob() {
         await this.schedulesService.ensureSchedulesForDoctors()
         await this.schedulesService.schedulesToDelete()
