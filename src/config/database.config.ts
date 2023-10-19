@@ -32,5 +32,5 @@ export const redisClientOption: any = {
         host: process.env.REDIS_HOST,
         port: process.env.REDIS_PORT
     },
-    ttl: 30 * 60 * 1000  //default
+    ttl: 2 * 60 * 60 * 1000  //default
 }

@@ -12,11 +12,5 @@
       "dest": "src/main.ts",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
-  ],
-  "crons": [
-    {
-      "path": "/config/cron",
-      "schedule": "0 16 * * *"
-    }
   ]
 }
