@@ -136,4 +136,23 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
             message: "successfully"
         }
     }
+
+    async workingTimeByDate(doctor_id: string, date: string) {
+        const doctor = await this.doctorService.findDoctorById(doctor_id)
+        if (!doctor) {
+            throw new NotFoundException('schedules_not_found')
+        }
+
+        const fdate = await this.parseDate(date)
+        const data = await this.schedulesRepository.findOne({
+            where: {
+                doctor: doctor,
+                day: fdate.day,
+                month: fdate.month,
+                year: fdate.year
+            }
+        })
+
+        return data.workingTimes
+    }
 }

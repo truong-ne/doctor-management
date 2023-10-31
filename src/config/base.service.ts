@@ -62,4 +62,18 @@ export abstract class BaseService<T> {
         return result;
     }
 
+    async parseDate(dateStr: string) {
+        const dateParts = dateStr.split('/');
+        if (dateParts.length === 3) {
+            const day = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]);
+            const year = parseInt(dateParts[2]);
+            return { day, month, year }
+        } else {
+            return {
+                message: 'invalid_date_format'
+            };
+        }
+    }
+
 }

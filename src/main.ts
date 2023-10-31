@@ -9,6 +9,7 @@ dotenv.config()
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix(process.env.SERVER_NAME)
+
   //Swagger
   const config = new DocumentBuilder()
     .setTitle('DOCTOR MANAGEMENT')
