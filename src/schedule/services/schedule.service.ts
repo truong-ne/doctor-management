@@ -138,6 +138,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
     }
 
     async workingTimeByDate(doctor_id: string, date: string) {
+
         const doctor = await this.doctorService.findDoctorById(doctor_id)
         if (!doctor) {
             throw new NotFoundException('schedules_not_found')
