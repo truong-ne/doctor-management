@@ -1,4 +1,4 @@
 export class ScheduleConsumerDto {
-    doctor_id: string
+    doctor: string
     date: string
 }
