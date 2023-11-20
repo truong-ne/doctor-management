@@ -17,5 +17,4 @@ export class ScheduleConsumer {
     async getDoctorSchedules(dto: ScheduleConsumerDto) {
         return await this.scheduleService.workingTimeByDate(dto.doctor_id, dto.date)
     }
-
 }

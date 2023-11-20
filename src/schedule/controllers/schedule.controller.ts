@@ -5,7 +5,6 @@ import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { UpdateSchedule } from "../dto/schedule.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @ApiTags('SCHEDULE')
 @Controller('schedule')
@@ -13,7 +12,6 @@ export class SchedulesController {
 
     constructor(
         private readonly schedulesService: SchedulesService,
-        private readonly amqpConnection: AmqpConnection,
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
@@ -53,24 +51,5 @@ export class SchedulesController {
         await this.schedulesService.schedulesToDelete()
 
         return "schedule cron job"
-    }
-
-    @Post('amqp')
-    async getHello() {
-        const timeout = 10000;
-        const startTime = Date.now();
-
-        if (this.amqpConnection.connected)
-            return 'amqp connected'
-
-        while (!this.amqpConnection.connected) {
-            const currentTime = Date.now();
-            if (currentTime - startTime >= timeout) {
-                break;
-            }
-            console.log('connecting...')
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-        return 'fail to connect amqp'
     }
 }
