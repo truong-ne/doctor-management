@@ -7,16 +7,20 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@ne
 import { Specialty } from "../../config/enum.constants";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
+import { AdminGuard } from "src/auth/guards/admin.guard";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @ApiTags('PROFILE')
 @Controller('doctor')
 export class DoctorController {
     constructor(
         private readonly doctorService: DoctorService,
-        @Inject(CACHE_MANAGER) private cacheManager: Cache
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
+        private readonly amqpConnection: AmqpConnection
     ) { }
 
     @UseGuards(DoctorGuard)
+    @UseGuards(AdminGuard)
     @ApiOperation({ summary: 'Lấy thông tin tài khoản bác sĩ' })
     @ApiBearerAuth()
     @ApiResponse({ status: 200, description: 'Lấy thông tin tài khoản thành công' })
@@ -105,5 +109,25 @@ export class DoctorController {
         await this.cacheManager.del('doctor-' + req.user.id)
 
         return await this.doctorService.updatedFixedTime(dto, req.user.id)
+    }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @Get('quantity')
+    async quantity() {
+        return await this.doctorService.doctorCount()
+    }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @Get('information')
+    async information() {
+        const information = await this.amqpConnection.request<string>({
+            exchange: 'healthline.doctor.information',
+            routingKey: 'information'
+        })
+        const data = await this.doctorService.getAllDoctorPerPage(1, 4, information)
+
+        return data
     }
 }

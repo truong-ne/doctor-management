@@ -142,4 +142,53 @@ export class DoctorService extends BaseService<Doctor> {
             data: data
         }
     }
+
+    async doctorCount(): Promise<any> {
+        const count = await this.doctorRepository.count()
+
+        return {
+            data: {
+                quantity: count
+            }
+        }
+    }
+
+    async getAllDoctorPerPage(page: number, num: number, information: any): Promise<any> {
+        var skip = (page - 1) * num
+        const doctors = await this.doctorRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" } })
+        const data = []
+
+        doctors.forEach(e => {
+            var flag = false
+            for (const i of information) {
+                if (e.id === i.doctor_id) {
+                    flag = true
+                    data.push({
+                        id: e.id,
+                        full_name: e.full_name,
+                        avatar: e.avatar,
+                        email: e.email,
+                        specialty: e.specialty,
+                        ratings: i.averageRating,
+                        number_of_consultation: i.quantity,
+                    })
+                    break
+                }
+            }
+            if (!flag) {
+                data.push({
+                    id: e.id,
+                    full_name: e.full_name,
+                    avatar: e.avatar,
+                    email: e.email,
+                    specialty: e.specialty,
+                    ratings: 0,
+                    number_of_consultation: 0,
+                })
+            }
+        })
+        return {
+            data: data
+        }
+    }
 }
