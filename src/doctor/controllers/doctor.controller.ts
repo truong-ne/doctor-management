@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, Get, UseGuards, Req, Inject } from "@nestjs/common";
+import { Body, Controller, Patch, Post, Get, UseGuards, Req, Inject, Param } from "@nestjs/common";
 import { DoctorService } from "../services/doctor.service";
 import { UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { SignUpDto } from "../dto/signUp.dto";
@@ -120,13 +120,21 @@ export class DoctorController {
 
     @UseGuards(AdminGuard)
     @ApiBearerAuth()
-    @Get('information')
-    async information() {
+    @Get('information/:page/:num')
+    async information(
+        @Param('page') page: number,
+        @Param('num') num: number
+    ) {
+        const cacheSchedules = await this.cacheManager.get('doctorInformation-' + page + '-' + num);
+        if (cacheSchedules) return cacheSchedules
+
         const information = await this.amqpConnection.request<string>({
             exchange: 'healthline.doctor.information',
             routingKey: 'information'
         })
-        const data = await this.doctorService.getAllDoctorPerPage(1, 4, information)
+        const data = await this.doctorService.getAllDoctorPerPage(page, num, information)
+
+        await this.cacheManager.set('doctorInformation-' + page + '-' + num, data)
 
         return data
     }
