@@ -154,6 +154,9 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
             }
         })
 
+        if (!data)
+            throw new NotFoundException('not_found')
+
         return data.workingTimes
     }
 }
