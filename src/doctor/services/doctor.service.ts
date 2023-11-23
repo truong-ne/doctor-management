@@ -191,4 +191,19 @@ export class DoctorService extends BaseService<Doctor> {
             data: data
         }
     }
+
+    async deleteDoctor(doctor_id: string) {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: doctor_id }
+        })
+
+        if (!doctor)
+            throw new NotFoundException('doctor_not_found')
+
+        await this.doctorRepository.delete(doctor)
+
+        return {
+            message: 'delete_successfully'
+        }
+    }
 }
