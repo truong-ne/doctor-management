@@ -169,6 +169,7 @@ export class DoctorService extends BaseService<Doctor> {
                         avatar: e.avatar,
                         email: e.email,
                         specialty: e.specialty,
+                        fee_per_minutes: e.fee_per_minutes,
                         ratings: i.averageRating,
                         number_of_consultation: i.quantity,
                     })
@@ -182,6 +183,7 @@ export class DoctorService extends BaseService<Doctor> {
                     avatar: e.avatar,
                     email: e.email,
                     specialty: e.specialty,
+                    fee_per_minutes: e.fee_per_minutes,
                     ratings: 0,
                     number_of_consultation: 0,
                 })

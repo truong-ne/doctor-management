@@ -16,10 +16,10 @@ export class DoctorController {
     constructor(
         private readonly doctorService: DoctorService,
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
-        private readonly amqpConnection: AmqpConnection
+        private readonly amqpConnection: AmqpConnection,
     ) { }
 
-    @UseGuards(true ? DoctorGuard : AdminGuard)
+    @UseGuards(DoctorGuard)
     @ApiOperation({ summary: 'Lấy thông tin tài khoản bác sĩ' })
     @ApiBearerAuth()
     @ApiResponse({ status: 200, description: 'Lấy thông tin tài khoản thành công' })
@@ -134,6 +134,23 @@ export class DoctorController {
         const data = await this.doctorService.getAllDoctorPerPage(page, num, information)
 
         await this.cacheManager.set('doctorInformation-' + page + '-' + num, data)
+
+        return data
+    }
+
+    @ApiBearerAuth()
+    @Get('list')
+    async doctorList() {
+        const cacheSchedules = await this.cacheManager.get('doctorList');
+        if (cacheSchedules) return cacheSchedules
+
+        const information = await this.amqpConnection.request<string>({
+            exchange: 'healthline.doctor.information',
+            routingKey: 'information'
+        })
+        const data = await this.doctorService.getAllDoctorPerPage(1, 10000, information)
+
+        await this.cacheManager.set('doctorList', data)
 
         return data
     }
