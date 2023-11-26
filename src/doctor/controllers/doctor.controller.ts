@@ -138,7 +138,6 @@ export class DoctorController {
         return data
     }
 
-    @ApiBearerAuth()
     @Get('list')
     async doctorList() {
         const cacheSchedules = await this.cacheManager.get('doctorList');
