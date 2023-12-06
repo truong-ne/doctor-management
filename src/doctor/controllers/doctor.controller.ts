@@ -9,6 +9,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
 import { AdminGuard } from "src/auth/guards/admin.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { Admin } from "typeorm";
 
 @ApiTags('PROFILE')
 @Controller('doctor')
@@ -38,6 +39,7 @@ export class DoctorController {
         return data
     }
 
+    @UseGuards(Admin)
     @ApiOperation({ summary: 'Đăng kí tài khoản bác sĩ (tạm thời chưa có sms 2fa)' })
     @ApiResponse({ status: 201, description: 'Tạo tài khoản thành công' })
     @ApiResponse({ status: 400, description: 'Đầu vào không hợp lệ' })
