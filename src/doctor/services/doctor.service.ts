@@ -36,7 +36,7 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.updated_at = doctor.created_at
 
         await this.doctorRepository.save(doctor)
-        this.mailer(doctor.email, password)
+        await this.mailer(doctor.email, password)
 
         return {
             data: {
