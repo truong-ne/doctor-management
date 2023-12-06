@@ -29,7 +29,6 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.phone = dto.phone
         doctor.specialty = dto.specialty
         doctor.password = await this.hashing(password)
-        doctor.password = "test"
         doctor.experience = dto.experience
         doctor.fee_per_minutes = dto.fee_per_minutes
         doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
