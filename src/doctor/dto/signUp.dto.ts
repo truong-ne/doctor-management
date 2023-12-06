@@ -19,6 +19,11 @@ export class SignUpDto {
     specialty!: string
 
     @IsNotEmpty()
+    @IsString()
+    @ApiProperty({ example: 'dr@gmail.com' })
+    email!: string
+
+    @IsNotEmpty()
     @Min(0)
     @ApiProperty({ example: 5 })
     experience: number

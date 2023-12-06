@@ -28,6 +28,7 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.full_name = dto.full_name
         doctor.phone = dto.phone
         doctor.specialty = dto.specialty
+        doctor.email = dto.email
         doctor.password = await this.hashing(password)
         doctor.experience = dto.experience
         doctor.fee_per_minutes = dto.fee_per_minutes
@@ -226,31 +227,31 @@ export class DoctorService extends BaseService<Doctor> {
         });
 
         const info = await transporter.sendMail({
-            from: '"Healthline.vn Inc" <healthlinemanager2023@gmail.com>', // sender address
-            to: `${email}`, // list of receivers
+            from: '"Healthline.vn Inc" <healthlinemanager2023@gmail.com>',
+            to: `${email}`,
             subject: "[PASSWORD] DOCTOR", // Subject line
             text: `Your new Password is ${password}`, // plain text body
             html: `<!DOCTYPE html>
-          <html>
-          <head>
-          <style>
-          table {
-            font-family: arial, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-          }
-          td, th {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-          }
-          </style>
-          </head>
-          <body>
-          <h1>Your new Password is ${password}</h1>
-          </body>
-          </html>       
-    `
+              <html>
+              <head>
+              <style>
+              table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+              }
+              td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+              }
+              </style>
+              </head>
+              <body>
+              <h1>Your new Password is ${password}</h1>
+              </body>
+              </html>       
+        `
         });
 
         console.log("Password sent: %s", info.messageId);
