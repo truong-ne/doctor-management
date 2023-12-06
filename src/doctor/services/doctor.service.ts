@@ -17,6 +17,7 @@ export class DoctorService extends BaseService<Doctor> {
         private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
+        this.cronDoctor()
     }
     @Cron(CronExpression.EVERY_10_MINUTES)
     async cronDoctor() {
@@ -25,7 +26,6 @@ export class DoctorService extends BaseService<Doctor> {
             routingKey: 'information'
         })
         const doctors = await this.getAllDoctorPerPage(1, 100000, information)
-        console.log(doctors)
 
         console.log('Meilisync Doctor')
         await fetch('https://meilisearch-truongne.koyeb.app/indexes/doctors/documents', {

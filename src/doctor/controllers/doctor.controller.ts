@@ -39,7 +39,7 @@ export class DoctorController {
         return data
     }
 
-    @UseGuards(AdminGuard)
+    // @UseGuards(AdminGuard)
     @ApiOperation({ summary: 'Đăng kí tài khoản bác sĩ (tạm thời chưa có sms 2fa)' })
     @ApiResponse({ status: 201, description: 'Tạo tài khoản thành công' })
     @ApiResponse({ status: 400, description: 'Đầu vào không hợp lệ' })
