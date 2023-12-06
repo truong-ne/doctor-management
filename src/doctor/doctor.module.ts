@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Doctor } from './entities/doctor.entity';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import * as dotenv from 'dotenv'
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config()
 
@@ -21,6 +22,7 @@ dotenv.config()
             uri: process.env.RABBITMQ_URL,
             connectionInitOptions: { wait: true, reject: true, timeout: 10000 },
         }),
+        ScheduleModule.forRoot()
     ],
     controllers: [DoctorController],
     providers: [DoctorService],

@@ -119,27 +119,6 @@ export class DoctorController {
         return await this.doctorService.doctorCount()
     }
 
-    @UseGuards(AdminGuard)
-    @ApiBearerAuth()
-    @Get('information/:page/:num')
-    async information(
-        @Param('page') page: number,
-        @Param('num') num: number
-    ) {
-        const cacheSchedules = await this.cacheManager.get('doctorInformation-' + page + '-' + num);
-        if (cacheSchedules) return cacheSchedules
-
-        const information = await this.amqpConnection.request<string>({
-            exchange: 'healthline.doctor.information',
-            routingKey: 'information'
-        })
-        const data = await this.doctorService.getAllDoctorPerPage(page, num, information)
-
-        await this.cacheManager.set('doctorInformation-' + page + '-' + num, data)
-
-        return data
-    }
-
     @Get('list')
     async doctorList() {
         const cacheSchedules = await this.cacheManager.get('doctorList');

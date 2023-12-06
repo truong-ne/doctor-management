@@ -7,13 +7,35 @@ import { SignUpDto } from "../dto/signUp.dto";
 import { UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
 import * as nodemailer from 'nodemailer'
+import { Cron, CronExpression } from '@nestjs/schedule'
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @Injectable()
 export class DoctorService extends BaseService<Doctor> {
     constructor(
-        @InjectRepository(Doctor) private readonly doctorRepository: Repository<Doctor>
+        @InjectRepository(Doctor) private readonly doctorRepository: Repository<Doctor>,
+        private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
+    }
+    @Cron(CronExpression.EVERY_10_MINUTES)
+    async cronDoctor() {
+        const information = await this.amqpConnection.request<string>({
+            exchange: 'healthline.doctor.information',
+            routingKey: 'information'
+        })
+        const doctors = await this.getAllDoctorPerPage(1, 100000, information)
+        console.log(doctors)
+
+        console.log('Meilisync Doctor')
+        await fetch('https://meilisearch-truongne.koyeb.app/indexes/doctors/documents', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer CHOPPER_LOVE_MEILISEARCH',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(doctors['data'])
+        })
     }
 
     async signup(dto: SignUpDto): Promise<any> {
