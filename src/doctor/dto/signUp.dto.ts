@@ -9,11 +9,6 @@ export class SignUpDto {
     phone: string
 
     @IsNotEmpty()
-    @IsStrongPassword()
-    @ApiProperty({ example: 'StrongPassword1.' })
-    password: string
-
-    @IsNotEmpty()
     @IsString()
     @ApiProperty({ example: 'Dr.Nguyen Van A' })
     full_name!: string

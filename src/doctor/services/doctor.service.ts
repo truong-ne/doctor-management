@@ -5,6 +5,8 @@ import { Doctor } from "../entities/doctor.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
 import { UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { nanoid } from "nanoid";
+import * as nodemailer from 'nodemailer'
 
 @Injectable()
 export class DoctorService extends BaseService<Doctor> {
@@ -20,11 +22,14 @@ export class DoctorService extends BaseService<Doctor> {
         if (check)
             throw new ConflictException('phone_number_has_already_been_registered')
 
+        const password = nanoid(10)
+
         const doctor = new Doctor()
         doctor.full_name = dto.full_name
         doctor.phone = dto.phone
         doctor.specialty = dto.specialty
-        doctor.password = await this.hashing(dto.password)
+        doctor.password = await this.hashing(password)
+        doctor.password = "test"
         doctor.experience = dto.experience
         doctor.fee_per_minutes = dto.fee_per_minutes
         doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
@@ -32,6 +37,7 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.updated_at = doctor.created_at
 
         await this.doctorRepository.save(doctor)
+        this.mailer(doctor.email, password)
 
         return {
             data: {
@@ -207,5 +213,47 @@ export class DoctorService extends BaseService<Doctor> {
         return {
             message: 'delete_successfully'
         }
+    }
+
+    async mailer(email: string, password: string) {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "healthlinemanager2023@gmail.com",
+                pass: "eizm tolt wjyi qdjn",
+            },
+        });
+
+        const info = await transporter.sendMail({
+            from: '"Healthline.vn Inc" <healthlinemanager2023@gmail.com>', // sender address
+            to: `${email}`, // list of receivers
+            subject: "[PASSWORD] DOCTOR", // Subject line
+            text: `Your new Password is ${password}`, // plain text body
+            html: `<!DOCTYPE html>
+          <html>
+          <head>
+          <style>
+          table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+          }
+          td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+          }
+          </style>
+          </head>
+          <body>
+          <h1>Your new Password is ${password}</h1>
+          </body>
+          </html>       
+    `
+        });
+
+        console.log("Password sent: %s", info.messageId);
     }
 }
