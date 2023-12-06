@@ -4,6 +4,7 @@ import { BaseService } from "../../config/base.service";
 import { Between, LessThan, LessThanOrEqual, Repository } from "typeorm";
 import { DoctorSchedules } from "../entities/schedule.entity";
 import { DoctorService } from "../../doctor/services/doctor.service";
+import { Cron, CronExpression } from '@nestjs/schedule'
 
 @Injectable()
 export class SchedulesService extends BaseService<DoctorSchedules> {
@@ -12,6 +13,12 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         @Inject(DoctorService) private readonly doctorService: DoctorService
     ) {
         super(schedulesRepository)
+    }
+
+    @Cron(CronExpression.EVERY_DAY_AT_1AM)
+    async cronSchedule() {
+        await this.ensureSchedulesForDoctors()
+        await this.schedulesToDelete()
     }
 
     async ensureSchedulesForDoctors() {
@@ -145,6 +152,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         }
 
         const fdate = await this.parseDate(date)
+
         const data = await this.schedulesRepository.findOne({
             where: {
                 doctor: doctor,
@@ -155,7 +163,7 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         })
 
         if (!data)
-            throw new NotFoundException('not_found')
+            return { message: "working_times_not_found" }
 
         return data.workingTimes
     }

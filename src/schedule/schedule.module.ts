@@ -7,6 +7,7 @@ import { DoctorModule } from '../doctor/doctor.module';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import * as dotenv from 'dotenv'
 import { ScheduleConsumer } from './consumers/schedule.consumer';
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config()
 @Module({
@@ -23,6 +24,7 @@ dotenv.config()
             uri: process.env.RABBITMQ_URL,
             connectionInitOptions: { wait: true, reject: true, timeout: 10000 },
         }),
+        ScheduleModule.forRoot()
     ],
     controllers: [SchedulesController],
     providers: [

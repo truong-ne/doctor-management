@@ -15,6 +15,8 @@ export class ScheduleConsumer {
         queue: 'working_times',
     })
     async getDoctorSchedules(dto: ScheduleConsumerDto) {
-        return await this.scheduleService.workingTimeByDate(dto.doctor_id, dto.date)
+        const data = await this.scheduleService.workingTimeByDate(dto.doctor_id, dto.date)
+        console.log(data)
+        return data
     }
 }
