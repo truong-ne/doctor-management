@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsPhoneNumber, IsString, Min } from "class-validator";
+import { Specialty } from "../../config/enum.constants";
 
 export class UpdateImageProfile {
     @IsNotEmpty()
@@ -24,4 +25,28 @@ export class UpdateEmail {
     @IsNotEmpty()
     @IsEmail()
     email: string
+}
+
+export class ModifyDoctor {
+    @IsString()
+    doctor_id: string
+
+    @IsPhoneNumber()
+    phone: string
+
+    @IsString()
+    full_name: string
+
+    @IsEnum(Specialty)
+    specialty: string
+
+    @IsString()
+    email: string
+
+    @IsNumber()
+    @Min(1)
+    experience: number
+
+    @IsNumber()
+    fee_per_minutes: number
 }

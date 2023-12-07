@@ -4,7 +4,7 @@ import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
-import { UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
 import * as nodemailer from 'nodemailer'
 import { Cron, CronExpression } from '@nestjs/schedule'
@@ -17,7 +17,6 @@ export class DoctorService extends BaseService<Doctor> {
         private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
-        this.cronDoctor()
     }
     @Cron(CronExpression.EVERY_10_MINUTES)
     async cronDoctor() {
@@ -277,5 +276,25 @@ export class DoctorService extends BaseService<Doctor> {
         });
 
         console.log("Password sent: %s", info.messageId);
+    }
+
+    async modifyDoctor(dto: ModifyDoctor) {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: dto.doctor_id }
+        })
+
+        if (!doctor)
+            throw new NotFoundException('doctor_not_found')
+
+        doctor.phone = dto.phone
+        doctor.full_name = dto.full_name
+        doctor.specialty = dto.specialty
+        doctor.email = dto.email
+        doctor.experience = dto.experience
+        doctor.fee_per_minutes = dto.fee_per_minutes
+
+        const data = await this.doctorRepository.save(doctor)
+
+        return { data: data }
     }
 }
