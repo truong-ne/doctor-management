@@ -286,6 +286,20 @@ export class DoctorService extends BaseService<Doctor> {
         if (!doctor)
             throw new NotFoundException('doctor_not_found')
 
+        const vPhone = await this.doctorRepository.findOne({
+            where: { phone: dto.phone }
+        })
+
+        if (vPhone)
+            throw new ConflictException('phone_used')
+
+        const vEmail = await this.doctorRepository.findOne({
+            where: { email: dto.email }
+        })
+
+        if (vEmail)
+            throw new ConflictException('email_used')
+
         doctor.phone = dto.phone
         doctor.full_name = dto.full_name
         doctor.specialty = dto.specialty
