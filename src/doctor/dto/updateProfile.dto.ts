@@ -29,24 +29,31 @@ export class UpdateEmail {
 
 export class ModifyDoctor {
     @IsString()
+    @ApiProperty({ example: 'doctor_id' })
     doctor_id: string
 
     @IsPhoneNumber()
+    @ApiProperty({ example: 'phone_number' })
     phone: string
 
     @IsString()
+    @ApiProperty({ example: 'full_name' })
     full_name: string
 
     @IsEnum(Specialty)
+    @ApiProperty({ example: 'specialty' })
     specialty: string
 
     @IsString()
+    @ApiProperty({ example: 'example@exam.com' })
     email: string
 
     @IsNumber()
     @Min(1)
+    @ApiProperty({ example: 3 })
     experience: number
 
     @IsNumber()
+    @ApiProperty({ example: 200000 })
     fee_per_minutes: number
 }
