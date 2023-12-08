@@ -17,6 +17,7 @@ export class DoctorService extends BaseService<Doctor> {
         private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
+        this.cronDoctor()
     }
     @Cron(CronExpression.EVERY_10_MINUTES)
     async cronDoctor() {
@@ -195,7 +196,9 @@ export class DoctorService extends BaseService<Doctor> {
                         full_name: e.full_name,
                         avatar: e.avatar,
                         email: e.email,
+                        phone: e.phone,
                         specialty: e.specialty,
+                        biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         ratings: i.averageRating,
                         number_of_consultation: i.quantity,
@@ -210,7 +213,9 @@ export class DoctorService extends BaseService<Doctor> {
                     full_name: e.full_name,
                     avatar: e.avatar,
                     email: e.email,
+                    phone: e.phone,
                     specialty: e.specialty,
+                    biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     ratings: 0,
                     number_of_consultation: 0,
