@@ -9,6 +9,13 @@ import { nanoid } from "nanoid";
 import * as nodemailer from 'nodemailer'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { promisify } from 'util'
+import * as fs from 'fs'
+
+const readFile = promisify(fs.readFile);
+
+const nodemailer = require("nodemailer")
+
 
 @Injectable()
 export class DoctorService extends BaseService<Doctor> {
@@ -102,18 +109,6 @@ export class DoctorService extends BaseService<Doctor> {
             },
             message: "successfully"
         }
-    }
-
-    async mockBiography(doctor_id: string, biography: string) {
-        const doctor = await this.doctorRepository.findOne({
-            where: { id: doctor_id }
-        })
-
-        doctor.biography = biography
-
-        await this.doctorRepository.save(doctor)
-
-        return 'nice'
     }
 
     async updateBiography(dto: UpdateBiograpyProfile, id: string): Promise<any> {
@@ -267,32 +262,15 @@ export class DoctorService extends BaseService<Doctor> {
             },
         });
 
+        const htmlContent = await readFile('./src/template/newpassword.html', 'utf8');
+        const modifiedHtmlContent = htmlContent.replace('{{ password }}', password);
+
         const info = await transporter.sendMail({
-            from: '"Healthline.vn Inc" <healthlinemanager2023@gmail.com>',
+            from: '"Healthline Inc" <healthlinemanager2023@gmail.com>',
             to: `${email}`,
             subject: "[PASSWORD] DOCTOR", // Subject line
             text: `Your new Password is ${password}`, // plain text body
-            html: `<!DOCTYPE html>
-              <html>
-              <head>
-              <style>
-              table {
-                font-family: arial, sans-serif;
-                border-collapse: collapse;
-                width: 100%;
-              }
-              td, th {
-                border: 1px solid #dddddd;
-                text-align: left;
-                padding: 8px;
-              }
-              </style>
-              </head>
-              <body>
-              <h1>Your new Password is ${password}</h1>
-              </body>
-              </html>       
-        `
+            html: modifiedHtmlContent
         });
 
         console.log("Password sent: %s", info.messageId);
@@ -344,6 +322,19 @@ export class DoctorService extends BaseService<Doctor> {
 
         return {
             data: quantity
+        }
+    }
+
+    async adminResetPassword(id: string) {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: id }
+        })
+
+        const password = nanoid(10)
+        await this.mailer(doctor.email, password)
+
+        return {
+            message: "reset successfully"
         }
     }
 }

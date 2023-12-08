@@ -21,10 +21,18 @@ export class UpdateFixedTime {
     fixed_times: any
 }
 
+
 export class UpdateEmail {
     @IsNotEmpty()
     @IsEmail()
     email: string
+}
+
+export class DoctorIdDto {
+    @IsNotEmpty()
+    @ApiProperty({ example: 'id' })
+    @IsString()
+    doctor_id: string
 }
 
 export class ModifyDoctor {

@@ -1,6 +1,6 @@
 import { Body, Controller, Patch, Post, Get, UseGuards, Req, Inject, Param } from "@nestjs/common";
 import { DoctorService } from "../services/doctor.service";
-import { ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { DoctorIdDto, ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { SignUpDto } from "../dto/signUp.dto";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -10,6 +10,7 @@ import { Cache } from "cache-manager";
 import { AdminGuard } from "src/auth/guards/admin.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Admin } from "typeorm";
+import { dot } from "node:test/reporters";
 
 @ApiTags('PROFILE')
 @Controller('doctor')
@@ -134,6 +135,15 @@ export class DoctorController {
                 doctorThisMonth: doctorCount.data
             }
         }
+    }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @Post('reset-password')
+    async resetPasswordByAdmin(
+        @Body() dto: DoctorIdDto
+    ) {
+        return await this.doctorService.adminResetPassword(dto.doctor_id)
     }
 
     @Get('list')
