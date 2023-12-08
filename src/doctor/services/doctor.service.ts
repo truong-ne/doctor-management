@@ -17,7 +17,6 @@ export class DoctorService extends BaseService<Doctor> {
         private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
-        this.joinDoctor()
     }
     @Cron(CronExpression.EVERY_10_MINUTES)
     async cronDoctor() {
@@ -103,6 +102,18 @@ export class DoctorService extends BaseService<Doctor> {
             },
             message: "successfully"
         }
+    }
+
+    async mockBiography(doctor_id: string, biography: string) {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: doctor_id }
+        })
+
+        doctor.biography = biography
+
+        await this.doctorRepository.save(doctor)
+
+        return 'nice'
     }
 
     async updateBiography(dto: UpdateBiograpyProfile, id: string): Promise<any> {

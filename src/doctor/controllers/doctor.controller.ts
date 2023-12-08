@@ -126,7 +126,14 @@ export class DoctorController {
     @ApiBearerAuth()
     @Get('quantity')
     async quantity() {
-        return await this.doctorService.doctorCount()
+        const doctorQuantity = await this.doctorService.doctorCount()
+        const doctorCount = await this.doctorService.joinDoctor()
+        return {
+            data: {
+                quantity: doctorQuantity.data.qucantity,
+                doctorThisMonth: doctorCount.data
+            }
+        }
     }
 
     @Get('list')
@@ -143,11 +150,5 @@ export class DoctorController {
         await this.cacheManager.set('doctorList', data)
 
         return data
-    }
-
-    @UseGuards(AdminGuard)
-    @Get('joined')
-    async joinedDoctor() {
-        return await this.doctorService.joinDoctor()
     }
 }
