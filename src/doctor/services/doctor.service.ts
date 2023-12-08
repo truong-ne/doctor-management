@@ -200,6 +200,7 @@ export class DoctorService extends BaseService<Doctor> {
                         specialty: e.specialty,
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
+                        account_balance: e.account_balance,
                         ratings: i.averageRating,
                         number_of_consultation: i.quantity,
                         updated_at: e.updated_at
@@ -217,6 +218,7 @@ export class DoctorService extends BaseService<Doctor> {
                     specialty: e.specialty,
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
+                    account_balance: e.account_balance,
                     ratings: 0,
                     number_of_consultation: 0,
                     updated_at: e.updated_at
