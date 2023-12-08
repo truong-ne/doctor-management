@@ -130,7 +130,7 @@ export class DoctorController {
         const doctorCount = await this.doctorService.joinDoctor()
         return {
             data: {
-                quantity: doctorQuantity.data.qucantity,
+                quantity: doctorQuantity.data.quantity,
                 doctorThisMonth: doctorCount.data
             }
         }
