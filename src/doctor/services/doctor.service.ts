@@ -199,6 +199,7 @@ export class DoctorService extends BaseService<Doctor> {
                         fee_per_minutes: e.fee_per_minutes,
                         ratings: i.averageRating,
                         number_of_consultation: i.quantity,
+                        updated_at: e.updated_at
                     })
                     break
                 }
@@ -213,6 +214,7 @@ export class DoctorService extends BaseService<Doctor> {
                     fee_per_minutes: e.fee_per_minutes,
                     ratings: 0,
                     number_of_consultation: 0,
+                    updated_at: e.updated_at
                 })
             }
         })
