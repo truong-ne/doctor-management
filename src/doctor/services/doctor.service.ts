@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from "@nestjs/common
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
-import { Repository } from "typeorm";
+import { Between, Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
 import { ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
@@ -17,7 +17,7 @@ export class DoctorService extends BaseService<Doctor> {
         private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
-        this.cronDoctor()
+        this.joinDoctor()
     }
     @Cron(CronExpression.EVERY_10_MINUTES)
     async cronDoctor() {
@@ -319,5 +319,20 @@ export class DoctorService extends BaseService<Doctor> {
         const data = await this.doctorRepository.save(doctor)
 
         return { data: data }
+    }
+
+    async joinDoctor() {
+        const startOfMonth = this.VNTime(-this.VNTime().getUTCDate() + 1)
+        const endOfMonth = this.VNTime(-this.VNTime().getUTCDate() + 1).getMonth() === 11 ? this.VNTime(32 - this.VNTime().getUTCDate()) : this.VNTime(0);
+
+        const quantity = await this.doctorRepository.count({
+            where: {
+                created_at: Between(startOfMonth, endOfMonth)
+            }
+        })
+
+        return {
+            data: quantity
+        }
     }
 }

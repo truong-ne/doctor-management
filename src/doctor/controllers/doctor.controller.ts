@@ -144,4 +144,10 @@ export class DoctorController {
 
         return data
     }
+
+    @UseGuards(AdminGuard)
+    @Get('joined')
+    async joinedDoctor() {
+        return await this.doctorService.joinDoctor()
+    }
 }
