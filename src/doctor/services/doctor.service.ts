@@ -45,10 +45,17 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async signup(dto: SignUpDto): Promise<any> {
-        const check = await this.findDoctorByPhone(dto.phone)
+        const checkPhone = await this.findDoctorByPhone(dto.phone)
 
-        if (check)
+        if (checkPhone)
             throw new ConflictException('phone_number_has_already_been_registered')
+
+        const checkEmail = await this.doctorRepository.findOne({
+            where: { email: dto.email }
+        })
+
+        if (checkEmail)
+            throw new ConflictException('email_number_has_already_been_registered')
 
         const password = nanoid(10)
 
