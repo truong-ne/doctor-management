@@ -148,7 +148,10 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
 
         const doctor = await this.doctorService.findDoctorById(doctor_id)
         if (!doctor) {
-            throw new NotFoundException('schedules_not_found')
+            return {
+                code: 404,
+                message: "schedules_not_found"
+            }
         }
 
         const fdate = await this.parseDate(date)
@@ -163,7 +166,10 @@ export class SchedulesService extends BaseService<DoctorSchedules> {
         })
 
         if (!data)
-            return { message: "working_times_not_found" }
+            return {
+                code: 404,
+                message: "working_times_not_found" 
+            }
 
         return data.workingTimes
     }
