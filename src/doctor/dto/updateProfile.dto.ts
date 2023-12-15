@@ -65,3 +65,13 @@ export class ModifyDoctor {
     @ApiProperty({ example: 200000 })
     fee_per_minutes: number
 }
+
+export class ChangePasswordDto {
+    @IsString()
+    @ApiProperty({ example: "old password" })
+    password: string
+
+    @IsString()
+    @ApiProperty({ example: "new password" })
+    new_password: string
+}

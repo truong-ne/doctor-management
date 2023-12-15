@@ -1,6 +1,6 @@
 import { Body, Controller, Patch, Post, Get, UseGuards, Req, Inject, Param } from "@nestjs/common";
 import { DoctorService } from "../services/doctor.service";
-import { DoctorIdDto, ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { ChangePasswordDto, DoctorIdDto, ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { SignUpDto } from "../dto/signUp.dto";
 import { DoctorGuard } from "../../auth/guards/doctor.guard";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -9,8 +9,6 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
 import { AdminGuard } from "src/auth/guards/admin.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
-import { Admin } from "typeorm";
-import { dot } from "node:test/reporters";
 
 @ApiTags('PROFILE')
 @Controller('doctor')
@@ -81,6 +79,19 @@ export class DoctorController {
         await this.cacheManager.del('doctor-' + req.user.id)
 
         return await this.doctorService.updateEmail(dto, req.user.id)
+    }
+
+    @UseGuards(DoctorGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Thay đổi password của bác sĩ' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'Sai đầu vào' })
+    @Patch('password')
+    async updatePassword(
+        @Body() dto: ChangePasswordDto,
+        @Req() req
+    ): Promise<any> {
+        return await this.doctorService.changePassword(req.user.id, dto)
     }
 
     @UseGuards(DoctorGuard)

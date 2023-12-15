@@ -4,7 +4,7 @@ import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
 import { Between, Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
-import { ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { ChangePasswordDto, ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
 import * as nodemailer from 'nodemailer'
 import { Cron, CronExpression } from '@nestjs/schedule'
@@ -99,6 +99,23 @@ export class DoctorService extends BaseService<Doctor> {
         return {
             data: {
                 avatar: doctor.avatar
+            },
+            message: "successfully"
+        }
+    }
+
+    async changePassword(doctor_id: string, dto: ChangePasswordDto): Promise<any> {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: doctor_id }
+        })
+
+        if (this.isMatch(doctor.password, dto.password))
+            doctor.password = await this.hashing(dto.new_password)
+
+        await this.doctorRepository.save(doctor)
+        return {
+            data: {
+                password: doctor.password
             },
             message: "successfully"
         }
