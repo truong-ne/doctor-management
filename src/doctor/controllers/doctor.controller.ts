@@ -9,6 +9,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
 import { AdminGuard } from "src/auth/guards/admin.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { ChangePasswordForgotDto } from "../dto/changePassword.dto";
 
 @ApiTags('PROFILE')
 @Controller('doctor')
@@ -171,5 +172,19 @@ export class DoctorController {
         await this.cacheManager.set('doctorList', data)
 
         return data
+    }
+
+    @Post('forget-password/:gmail')
+    async forgetPassword(
+        @Param('gmail') gmail: string
+    ) {
+        return await this.doctorService.forgetPassword(gmail)
+    }
+
+    @Post('reset-password-forgot')
+    async changePasswordForgot(
+        @Body() dto: ChangePasswordForgotDto
+    ) {
+        return await this.doctorService.changePasswordForgot(dto)
     }
 }
