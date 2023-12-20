@@ -1,16 +1,17 @@
-import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
 import { Between, In, Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
-import { ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
+import { ChangePasswordDto, ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
 import * as nodemailer from 'nodemailer'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { promisify } from 'util'
 import * as fs from 'fs'
+import { ChangePasswordForgotDto } from "../dto/changePassword.dto";
 
 const readFile = promisify(fs.readFile);
 
@@ -99,6 +100,23 @@ export class DoctorService extends BaseService<Doctor> {
         return {
             data: {
                 avatar: doctor.avatar
+            },
+            message: "successfully"
+        }
+    }
+
+    async changePassword(doctor_id: string, dto: ChangePasswordDto): Promise<any> {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: doctor_id }
+        })
+
+        if (this.isMatch(doctor.password, dto.password))
+            doctor.password = await this.hashing(dto.new_password)
+
+        await this.doctorRepository.save(doctor)
+        return {
+            data: {
+                password: doctor.password
             },
             message: "successfully"
         }
@@ -366,6 +384,69 @@ export class DoctorService extends BaseService<Doctor> {
 
         return {
             message: "reset successfully"
+        }
+    }
+
+    async forgetPassword(email: string): Promise<any> {
+        const checkEmail = await this.doctorRepository.findOne({
+            where: { email: email }
+        })
+
+        if (!checkEmail)
+            throw new NotFoundException('email_not_found')
+
+        const rabbitmq = await this.amqpConnection.request<any>({
+            exchange: 'healthline.doctor.information',
+            routingKey: 'create_otp',
+            payload: checkEmail.id,
+            timeout: 10000,
+        })
+
+        if (!rabbitmq || rabbitmq === '')
+            throw new BadRequestException('send_email_failed')
+
+        await this.mailer(checkEmail.email, rabbitmq)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
+    async changePasswordForgot(dto: ChangePasswordForgotDto): Promise<any> {
+        const doctor = await this.doctorRepository.findOne({
+            where: { email: dto.email }
+        })
+        if (!doctor)
+            throw new NotFoundException('email_not_found')
+
+        if (dto.password !== dto.passwordConfirm)
+            throw new BadRequestException('password_incorrect')
+        else if (doctor.password === dto.password)
+            throw new BadRequestException('password_had_use')
+        else {
+            const rabbitmq = await this.amqpConnection.request<any>({
+                exchange: 'healthline.doctor.information',
+                routingKey: 'check_otp',
+                payload: { userId: doctor.id, code: dto.otp },
+                timeout: 10000,
+            })
+
+            if (rabbitmq) {
+                doctor.password = await this.hashing(dto.password)
+            } else
+                throw new BadRequestException('otp_expired')
+        }
+
+        try {
+            await this.doctorRepository.save(doctor)
+        } catch (error) {
+            throw new BadRequestException('update_doctor_failed')
+        }
+
+        return {
+            "code": 200,
+            "message": "success"
         }
     }
 }
