@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from "@nestjs/common
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
-import { Between, Repository } from "typeorm";
+import { Between, In, Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
 import { ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
@@ -240,6 +240,30 @@ export class DoctorService extends BaseService<Doctor> {
         })
         return {
             data: data
+        }
+    }
+
+    async findAllDoctorInfo(uids: string[]) {
+        const doctor = await this.doctorRepository.find({ where: { id: In(uids) } })
+
+        if(doctor.length === 0)
+            return {
+                code: 404,
+                message: "user_not_found"
+            }
+
+        const data = []
+        doctor.forEach(e => {
+            data.push({
+                uid: e.id,
+                full_name: e.full_name,
+                avatar: e.avatar
+            })
+        })
+        return {
+            "code": 200,
+            "message": "success",
+            "data": data
         }
     }
 

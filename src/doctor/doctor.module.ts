@@ -6,6 +6,7 @@ import { Doctor } from './entities/doctor.entity';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import * as dotenv from 'dotenv'
 import { ScheduleModule } from '@nestjs/schedule';
+import { DoctorConsumer } from './consumers/doctor.consumer';
 
 dotenv.config()
 
@@ -25,7 +26,7 @@ dotenv.config()
         ScheduleModule.forRoot()
     ],
     controllers: [DoctorController],
-    providers: [DoctorService],
+    providers: [DoctorService, DoctorConsumer],
     exports: [DoctorService]
 })
 export class DoctorModule { }
