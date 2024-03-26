@@ -158,6 +158,11 @@ export class DoctorController {
         return await this.doctorService.adminResetPassword(dto.doctor_id)
     }
 
+    @Get('list-by-id')
+    async doctorListById(@Body() ids: string[]) {
+        return await this.doctorService.findAllDoctorInfo(ids)
+    }
+
     @Get('list')
     async doctorList() {
         const cacheSchedules = await this.cacheManager.get('doctorList');

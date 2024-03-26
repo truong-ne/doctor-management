@@ -264,12 +264,6 @@ export class DoctorService extends BaseService<Doctor> {
     async findAllDoctorInfo(uids: string[]) {
         const doctor = await this.doctorRepository.find({ where: { id: In(uids) } })
 
-        if(doctor.length === 0)
-            return {
-                code: 404,
-                message: "user_not_found"
-            }
-
         const data = []
         doctor.forEach(e => {
             data.push({
