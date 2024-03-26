@@ -262,6 +262,7 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async findAllDoctorInfo(uids: string[]) {
+        console.log(uids)
         const doctor = await this.doctorRepository.find({ where: { id: In(uids) } })
 
         const data = []

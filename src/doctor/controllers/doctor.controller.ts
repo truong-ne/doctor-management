@@ -159,7 +159,7 @@ export class DoctorController {
     }
 
     @Get('list-by-id')
-    async doctorListById(@Body() ids: string[]) {
+    async doctorListById(@Body('ids') ids: string[]) {
         return await this.doctorService.findAllDoctorInfo(ids)
     }
 
