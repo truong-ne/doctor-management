@@ -261,8 +261,62 @@ export class DoctorService extends BaseService<Doctor> {
         }
     }
 
+    async findAllDoctorFullInfo(uids: string[]) {
+        const doctors = await this.doctorRepository.find({ where: { id: In(uids) } })
+        const data = []
+
+        const information = await this.amqpConnection.request<any>({
+            exchange: 'healthline.doctor.information',
+            routingKey: 'information'
+        })
+
+        doctors.forEach(e => {
+            var flag = false
+            for (const i of information) {
+                if (e.id === i.doctor_id) {
+                    flag = true
+                    data.push({
+                        id: e.id,
+                        full_name: e.full_name,
+                        avatar: e.avatar,
+                        email: e.email,
+                        phone: e.phone,
+                        specialty: e.specialty,
+                        biography: e.biography,
+                        fee_per_minutes: e.fee_per_minutes,
+                        account_balance: e.account_balance,
+                        ratings: i.averageRating,
+                        number_of_consultation: i.quantity,
+                        updated_at: e.updated_at
+                    })
+                    break
+                }
+            }
+            if (!flag) {
+                data.push({
+                    id: e.id,
+                    full_name: e.full_name,
+                    avatar: e.avatar,
+                    email: e.email,
+                    phone: e.phone,
+                    specialty: e.specialty,
+                    biography: e.biography,
+                    fee_per_minutes: e.fee_per_minutes,
+                    account_balance: e.account_balance,
+                    ratings: 0,
+                    number_of_consultation: 0,
+                    updated_at: e.updated_at
+                })
+            }
+        })
+        return {
+            "code": 200,
+            "message": "success",
+            "data": data
+        }
+    }
+
     async findAllDoctorInfo(uids: string[]) {
-        console.log(uids)
         const doctor = await this.doctorRepository.find({ where: { id: In(uids) } })
 
         const data = []
