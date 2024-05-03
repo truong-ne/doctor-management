@@ -322,7 +322,7 @@ export class DoctorService extends BaseService<Doctor> {
         const data = []
         doctor.forEach(e => {
             data.push({
-                uid: e.id,
+                id: e.id,
                 full_name: e.full_name,
                 avatar: e.avatar
             })
