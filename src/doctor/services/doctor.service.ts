@@ -40,7 +40,6 @@ export class DoctorService extends BaseService<Doctor> {
         })
         const doctors = await this.getAllDoctorPerPage(1, 100000, information)
 
-        console.log('Meilisync Doctor')
         await fetch('https://meilisearch-truongne.koyeb.app/indexes/doctors/documents', {
             method: 'POST',
             headers: {
@@ -249,12 +248,11 @@ export class DoctorService extends BaseService<Doctor> {
 
     async getAllDoctorPerPage(page: number, num: number, information: any): Promise<any> {
         var skip = (page - 1) * num
-        const doctors = await this.doctorRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" }, relations: ['specialties'] })
+        const doctors = await this.doctorRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" }, relations: ['specialties', 'careers', 'educationAndCertification'] })
         const data = []
 
         doctors.forEach(e => {
             var flag = false
-            const specialties = e.specialties.map(s => s.specialty)
             for (const i of information) {
                 if (e.id === i.doctor_id) {
                     flag = true
@@ -264,7 +262,9 @@ export class DoctorService extends BaseService<Doctor> {
                         avatar: e.avatar,
                         email: e.email,
                         phone: e.phone,
-                        specialty: specialties,
+                        career: e.careers,
+                        specialty: e.specialties,
+                        educationAndCertification: e.educationAndCertification,
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         account_balance: e.account_balance,
@@ -282,7 +282,9 @@ export class DoctorService extends BaseService<Doctor> {
                     avatar: e.avatar,
                     email: e.email,
                     phone: e.phone,
-                    specialty: specialties,
+                    career: e.careers,
+                    specialty: e.specialties,
+                    educationAndCertification: e.educationAndCertification,
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     account_balance: e.account_balance,
@@ -298,7 +300,7 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async findAllDoctorFullInfo(uids: string[]) {
-        const doctors = await this.doctorRepository.find({ where: { id: In(uids) }, relations: ['specialties'] })
+        const doctors = await this.doctorRepository.find({ where: { id: In(uids) }, relations: ['specialties', 'careers', 'educationAndCertification'] })
         const data = []
 
         const information = await this.amqpConnection.request<any>({
@@ -308,7 +310,6 @@ export class DoctorService extends BaseService<Doctor> {
 
         doctors.forEach(e => {
             var flag = false
-            const specialties = e.specialties.map(s => s.specialty)
             for (const i of information) {
                 if (e.id === i.doctor_id) {
                     flag = true
@@ -318,7 +319,9 @@ export class DoctorService extends BaseService<Doctor> {
                         avatar: e.avatar,
                         email: e.email,
                         phone: e.phone,
-                        specialty: specialties,
+                        career: e.careers,
+                        specialty: e.specialties,
+                        educationAndCertification: e.educationAndCertification,
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         account_balance: e.account_balance,
@@ -336,7 +339,9 @@ export class DoctorService extends BaseService<Doctor> {
                     avatar: e.avatar,
                     email: e.email,
                     phone: e.phone,
-                    specialty: specialties,
+                    career: e.careers,
+                    specialty: e.specialties,
+                    educationAndCertification: e.educationAndCertification,
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     account_balance: e.account_balance,
