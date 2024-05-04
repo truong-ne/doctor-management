@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsMobilePhone, IsEnum, IsStrongPassword, Min, IsArray } from "class-validator";
+import { IsNotEmpty, IsString, IsMobilePhone, IsEnum, IsStrongPassword, Min, IsArray, IsBoolean, IsEmail } from "class-validator";
 import { Specialty } from "../../config/enum.constants";
+import { CareerDto } from "./career.dto";
+import { SpecialtyDto } from "./specialty.dto";
+import { EducationAndCertificationDto } from "./educationAndCertification.dto";
 
 export class SignUpDto {
     @IsNotEmpty()
@@ -9,32 +12,40 @@ export class SignUpDto {
     phone: string
 
     @IsNotEmpty()
+    @IsBoolean()
+    @ApiProperty({ example: 'true' })
+    gender: boolean
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({ example: '07/07/2002' })
+    dayOfBirth: string
+
+    @IsString()
+    @ApiProperty({ example: 'link' })
+    introduce: string
+
+    @IsNotEmpty()
     @IsString()
     @ApiProperty({ example: 'Dr.Nguyen Van A' })
     full_name!: string
 
     @IsNotEmpty()
-    @IsEnum(Specialty)
-    @ApiProperty({ example: 'gynaecologist' })
-    specialty!: string
-
-    @IsNotEmpty()
-    @IsString()
+    @IsEmail()
     @ApiProperty({ example: 'dr@gmail.com' })
     email!: string
 
     @IsNotEmpty()
-    @Min(0)
-    @ApiProperty({ example: 5 })
-    experience: number
+    @IsString()
+    @ApiProperty({ example: 'Dr.Nguyen Van A' })
+    biography!: string
 
-    @IsNotEmpty()
-    @Min(0)
-    @ApiProperty({ example: 20 })
-    fee_per_minutes: number
-
-    @IsNotEmpty()
     @IsArray()
-    @ApiProperty({ example: [[15, 16, 17, 18], [31, 32, 32, 34], [], [], [], [], [19, 20, 21, 22]] })
-    fixed_times: any
+    careers: CareerDto[]
+
+    @IsArray()
+    specialty: SpecialtyDto[]
+
+    @IsArray()
+    educationAndCertification: EducationAndCertificationDto[]
 }

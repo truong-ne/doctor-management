@@ -48,18 +48,9 @@ export class ModifyDoctor {
     @ApiProperty({ example: 'full_name' })
     full_name: string
 
-    @IsEnum(Specialty)
-    @ApiProperty({ example: 'specialty' })
-    specialty: string
-
     @IsString()
     @ApiProperty({ example: 'example@exam.com' })
     email: string
-
-    @IsNumber()
-    @Min(1)
-    @ApiProperty({ example: 3 })
-    experience: number
 
     @IsNumber()
     @ApiProperty({ example: 200000 })

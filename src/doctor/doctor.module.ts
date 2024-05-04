@@ -7,12 +7,15 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import * as dotenv from 'dotenv'
 import { ScheduleModule } from '@nestjs/schedule';
 import { DoctorConsumer } from './consumers/doctor.consumer';
+import { Career } from './entities/career.entity';
+import { EducationAndCertification } from './entities/educationAndCertification.entity';
+import { Specialties } from './entities/specialty.entity';
 
 dotenv.config()
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Doctor]),
+        TypeOrmModule.forFeature([Doctor, Career,  EducationAndCertification, Specialties]),
         RabbitMQModule.forRoot(RabbitMQModule, {
             exchanges: [
                 {

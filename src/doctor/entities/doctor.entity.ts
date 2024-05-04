@@ -1,8 +1,10 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
-import { Specialty } from "../../config/enum.constants";
 import { DoctorSchedules } from "../../schedule/entities/schedule.entity";
 import { Min } from "class-validator";
+import { Career } from "./career.entity";
+import { Specialties } from "./specialty.entity";
+import { EducationAndCertification } from "./educationAndCertification.entity";
 
 @Entity({ name: 'Doctors' })
 export class Doctor {
@@ -16,13 +18,22 @@ export class Doctor {
     @Column()
     phone: string
 
+    @Column({ default: true })
+    gender: boolean
+
+    @Column({ name: 'day_of_birth', nullable: true })
+    dayOfBirth: string
+
     @Column()
     password: string
 
-    @Column({ nullable: true })
+    @Column()
     email: string
 
-    @Column({ default: true })
+    @Column({ nullable: true })
+    introduce: string
+
+    @Column({ default: false })
     isActive: boolean
 
     @Column({ name: 'full_name' })
@@ -34,16 +45,9 @@ export class Doctor {
     @Column({ nullable: true })
     biography: string
 
-    @Column({ type: 'enum', enum: Specialty })
-    specialty: string
-
     @Column({ name: 'account_balance', default: 0 })
     @Min(0)
     account_balance: number
-
-    @Column({ default: 0 })
-    @Min(0)
-    experience: number
 
     @Column({ default: 0 })
     @Min(0)
@@ -54,6 +58,15 @@ export class Doctor {
 
     @OneToMany(() => DoctorSchedules, e => e.doctor)
     schedules: DoctorSchedules[]
+
+    @OneToMany(() => Career, c => c.doctor)
+    careers: Career[]
+
+    @OneToMany(() => Specialties, s => s.doctor)
+    specialties: Specialties[]
+
+    @OneToMany(() => EducationAndCertification, e => e.doctor)
+    educationAndCertification: EducationAndCertification[]
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date

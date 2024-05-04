@@ -12,6 +12,9 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { promisify } from 'util'
 import * as fs from 'fs'
 import { ChangePasswordForgotDto } from "../dto/changePassword.dto";
+import { Career } from "../entities/career.entity";
+import { EducationAndCertification } from "../entities/educationAndCertification.entity";
+import { Specialties } from "../entities/specialty.entity";
 
 const readFile = promisify(fs.readFile);
 
@@ -22,6 +25,9 @@ const nodemailer = require("nodemailer")
 export class DoctorService extends BaseService<Doctor> {
     constructor(
         @InjectRepository(Doctor) private readonly doctorRepository: Repository<Doctor>,
+        @InjectRepository(Career) private readonly careerRepository: Repository<Career>,
+        @InjectRepository(Specialties) private readonly specialtyRepository: Repository<Specialties>,
+        @InjectRepository(EducationAndCertification) private readonly educationAndCertificationRepository: Repository<EducationAndCertification>,
         private readonly amqpConnection: AmqpConnection,
     ) {
         super(doctorRepository)
@@ -63,29 +69,58 @@ export class DoctorService extends BaseService<Doctor> {
         const doctor = new Doctor()
         doctor.full_name = dto.full_name
         doctor.phone = dto.phone
-        doctor.specialty = dto.specialty
+        doctor.gender = dto.gender
+        doctor.dayOfBirth = dto.dayOfBirth
+        doctor.introduce = dto.introduce
         doctor.email = dto.email
         doctor.password = await this.hashing(password)
-        doctor.experience = dto.experience
-        doctor.fee_per_minutes = dto.fee_per_minutes
-        doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
+        doctor.biography = dto.biography
+        doctor.fixed_times = await this.fixedArrayToString([[],[],[],[],[],[],[]])
         doctor.created_at = this.VNTime()
         doctor.updated_at = doctor.created_at
 
         await this.doctorRepository.save(doctor)
+
+        dto.careers.forEach(async c => {
+            const career = new Career()
+            career.doctor = doctor
+            career.medicalInstitute = c.medicalInstitute
+            career.periodEnd = c.periodEnd
+            career.periodStart = c.periodStart
+            career.position = c.position
+
+            await this.careerRepository.save(career)
+        })
+
+        dto.specialty.forEach(async s => {
+            const specialty = new Specialties()
+            specialty.doctor = doctor
+            specialty.image = s.image
+            specialty.levelOfSpecialty = s.levelOfSpecialty
+            specialty.specialty = s.specialty
+
+            await this.specialtyRepository.save(specialty)
+        })
+
+        dto.educationAndCertification.forEach(async e => {
+            const educationAndCertification = new EducationAndCertification()
+            educationAndCertification.address = e.address
+            educationAndCertification.dateOfReceiptOfDiploma = e.dateOfReceiptOfDiploma
+            educationAndCertification.degreeOfEducation = e.degreeOfEducation
+            educationAndCertification.diplomaNumberAndSeries = e.diplomaNumberAndSeries
+            educationAndCertification.doctor = doctor
+            educationAndCertification.institution = e.institution
+            educationAndCertification.specialtyByDiploma = e.specialtyByDiploma
+            educationAndCertification.typeOfEducationAndExperience = e.typeOfEducationAndExperience
+
+            await this.educationAndCertificationRepository.save(educationAndCertification)
+        })
+
         await this.mailer(doctor.email, password)
 
         return {
-            data: {
-                id: doctor.id,
-                full_name: doctor.full_name,
-                phone: doctor.phone,
-                specialty: doctor.specialty,
-                experience: doctor.experience,
-                fee_per_minutes: doctor.fee_per_minutes,
-                fixed_times: doctor.fixed_times
-            },
-            message: "succesfully"
+            code: 200,
+            message: "success"
         }
     }
 
@@ -214,11 +249,12 @@ export class DoctorService extends BaseService<Doctor> {
 
     async getAllDoctorPerPage(page: number, num: number, information: any): Promise<any> {
         var skip = (page - 1) * num
-        const doctors = await this.doctorRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" } })
+        const doctors = await this.doctorRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" }, relations: ['specialties'] })
         const data = []
 
         doctors.forEach(e => {
             var flag = false
+            const specialties = e.specialties.map(s => s.specialty)
             for (const i of information) {
                 if (e.id === i.doctor_id) {
                     flag = true
@@ -228,7 +264,7 @@ export class DoctorService extends BaseService<Doctor> {
                         avatar: e.avatar,
                         email: e.email,
                         phone: e.phone,
-                        specialty: e.specialty,
+                        specialty: specialties,
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         account_balance: e.account_balance,
@@ -246,7 +282,7 @@ export class DoctorService extends BaseService<Doctor> {
                     avatar: e.avatar,
                     email: e.email,
                     phone: e.phone,
-                    specialty: e.specialty,
+                    specialty: specialties,
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     account_balance: e.account_balance,
@@ -262,7 +298,7 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async findAllDoctorFullInfo(uids: string[]) {
-        const doctors = await this.doctorRepository.find({ where: { id: In(uids) } })
+        const doctors = await this.doctorRepository.find({ where: { id: In(uids) }, relations: ['specialties'] })
         const data = []
 
         const information = await this.amqpConnection.request<any>({
@@ -272,6 +308,7 @@ export class DoctorService extends BaseService<Doctor> {
 
         doctors.forEach(e => {
             var flag = false
+            const specialties = e.specialties.map(s => s.specialty)
             for (const i of information) {
                 if (e.id === i.doctor_id) {
                     flag = true
@@ -281,7 +318,7 @@ export class DoctorService extends BaseService<Doctor> {
                         avatar: e.avatar,
                         email: e.email,
                         phone: e.phone,
-                        specialty: e.specialty,
+                        specialty: specialties,
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         account_balance: e.account_balance,
@@ -299,7 +336,7 @@ export class DoctorService extends BaseService<Doctor> {
                     avatar: e.avatar,
                     email: e.email,
                     phone: e.phone,
-                    specialty: e.specialty,
+                    specialty: specialties,
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     account_balance: e.account_balance,
@@ -398,9 +435,7 @@ export class DoctorService extends BaseService<Doctor> {
 
         doctor.phone = dto.phone
         doctor.full_name = dto.full_name
-        doctor.specialty = dto.specialty
         doctor.email = dto.email
-        doctor.experience = dto.experience
         doctor.fee_per_minutes = dto.fee_per_minutes
 
         const data = await this.doctorRepository.save(doctor)
