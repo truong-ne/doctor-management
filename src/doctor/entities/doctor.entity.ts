@@ -30,9 +30,6 @@ export class Doctor {
     @Column()
     email: string
 
-    @Column({ nullable: true })
-    introduce: string
-
     @Column({ default: false })
     isActive: boolean
 

@@ -70,11 +70,10 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.phone = dto.phone
         doctor.gender = dto.gender
         doctor.dayOfBirth = dto.dayOfBirth
-        doctor.introduce = dto.introduce
         doctor.email = dto.email
         doctor.password = await this.hashing(password)
         doctor.biography = dto.biography
-        doctor.fixed_times = await this.fixedArrayToString([[],[],[],[],[],[],[]])
+        doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
         doctor.created_at = this.VNTime()
         doctor.updated_at = doctor.created_at
 

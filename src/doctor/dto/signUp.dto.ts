@@ -22,8 +22,8 @@ export class SignUpDto {
     dayOfBirth: string
 
     @IsString()
-    @ApiProperty({ example: 'link' })
-    introduce: string
+    @ApiProperty({ example: '[[],[],[],[],[],[],[]]' })
+    fixed_times: string
 
     @IsNotEmpty()
     @IsString()
