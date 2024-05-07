@@ -21,7 +21,7 @@ export class SignUpDto {
     @ApiProperty({ example: '07/07/2002' })
     dayOfBirth: string
 
-    @IsString()
+    @IsArray()
     @ApiProperty({ example: '[[],[],[],[],[],[],[]]' })
     fixed_times: string
 
