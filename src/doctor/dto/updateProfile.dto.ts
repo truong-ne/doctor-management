@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsPhoneNumber, IsString, Min } from "class-validator";
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsPhoneNumber, IsString, Min } from "class-validator";
 import { Specialty } from "../../config/enum.constants";
 
 export class UpdateImageProfile {
@@ -51,6 +51,10 @@ export class ModifyDoctor {
     @IsString()
     @ApiProperty({ example: 'example@exam.com' })
     email: string
+
+    @IsBoolean()
+    @ApiProperty({ example: true })
+    is_Active: boolean
 
     @IsNumber()
     @ApiProperty({ example: 200000 })

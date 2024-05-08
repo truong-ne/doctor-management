@@ -267,6 +267,7 @@ export class DoctorService extends BaseService<Doctor> {
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         account_balance: e.account_balance,
+                        is_active: e.isActive,
                         ratings: i.averageRating,
                         number_of_consultation: i.quantity,
                         updated_at: e.updated_at
@@ -287,6 +288,7 @@ export class DoctorService extends BaseService<Doctor> {
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     account_balance: e.account_balance,
+                    is_active: e.isActive,
                     ratings: 0,
                     number_of_consultation: 0,
                     updated_at: e.updated_at
@@ -324,6 +326,7 @@ export class DoctorService extends BaseService<Doctor> {
                         biography: e.biography,
                         fee_per_minutes: e.fee_per_minutes,
                         account_balance: e.account_balance,
+                        is_active: e.isActive,
                         ratings: i.averageRating,
                         number_of_consultation: i.quantity,
                         updated_at: e.updated_at
@@ -344,6 +347,7 @@ export class DoctorService extends BaseService<Doctor> {
                     biography: e.biography,
                     fee_per_minutes: e.fee_per_minutes,
                     account_balance: e.account_balance,
+                    is_active: e.isActive,
                     ratings: 0,
                     number_of_consultation: 0,
                     updated_at: e.updated_at
@@ -440,6 +444,7 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.phone = dto.phone
         doctor.full_name = dto.full_name
         doctor.email = dto.email
+        doctor.isActive = dto.is_Active
         doctor.fee_per_minutes = dto.fee_per_minutes
 
         const data = await this.doctorRepository.save(doctor)
