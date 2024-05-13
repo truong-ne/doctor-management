@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { Doctor } from "../../doctor/entities/doctor.entity";
 import { Specialty } from "../../config/enum.constants"
 
-@Entity({ name: 'Specialties' })
+@Entity({ name: 'Specialty' })
 export class Specialties {
     constructor() {
         this.id = nanoid()
