@@ -15,6 +15,7 @@ import { ChangePasswordForgotDto } from "../dto/changePassword.dto";
 import { Career } from "../entities/career.entity";
 import { EducationAndCertification } from "../entities/educationAndCertification.entity";
 import { Specialties } from "../entities/specialty.entity";
+import { Specialty } from "src/config/enum.constants";
 
 const readFile = promisify(fs.readFile);
 
@@ -560,6 +561,20 @@ export class DoctorService extends BaseService<Doctor> {
         return {
             "code": 200,
             "message": "success"
+        }
+    }
+
+    async statisticDoctorBySpecialty() {
+        const data = {}
+        for(let specialty in Specialty) {
+            const specialtys = await this.specialtyRepository.findBy({ specialty: specialty })
+            data[specialty] = specialtys.length
+        }
+
+        return {
+            code: 200,
+            message: 'success',
+            data: data
         }
     }
 }

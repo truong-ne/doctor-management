@@ -158,6 +158,14 @@ export class DoctorController {
         return await this.doctorService.adminResetPassword(dto.doctor_id)
     }
 
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Thống kê số lượng bác sĩ theo chuyên ngành' })
+    @Get('admin/specialty')
+    async statisticDoctorBySpecialty() {
+        return await this.doctorService.statisticDoctorBySpecialty()
+    }
+
     @Get('list-by-id')
     async doctorListById(@Body('ids') ids: string[]) {
         return await this.doctorService.findAllDoctorInfo(ids)
