@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException, BadRequestException }
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { Doctor } from "../entities/doctor.entity";
-import { Between, In, Repository } from "typeorm";
+import { Between, DataSource, In, Repository } from "typeorm";
 import { SignUpDto } from "../dto/signUp.dto";
 import { ChangePasswordDto, ModifyDoctor, UpdateBiograpyProfile, UpdateEmail, UpdateFixedTime, UpdateImageProfile } from "../dto/updateProfile.dto";
 import { nanoid } from "nanoid";
@@ -29,6 +29,7 @@ export class DoctorService extends BaseService<Doctor> {
         @InjectRepository(Specialties) private readonly specialtyRepository: Repository<Specialties>,
         @InjectRepository(EducationAndCertification) private readonly educationAndCertificationRepository: Repository<EducationAndCertification>,
         private readonly amqpConnection: AmqpConnection,
+        private dataSource: DataSource
     ) {
         super(doctorRepository)
     }
@@ -51,75 +52,86 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async signup(dto: SignUpDto): Promise<any> {
-        const checkPhone = await this.findDoctorByPhone(dto.phone)
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.startTransaction();
 
-        if (checkPhone)
-            throw new ConflictException('phone_number_has_already_been_registered')
+        try {
+            const checkPhone = await this.findDoctorByPhone(dto.phone)
 
-        const checkEmail = await this.doctorRepository.findOne({
-            where: { email: dto.email }
-        })
-
-        if (checkEmail)
-            throw new ConflictException('email_number_has_already_been_registered')
-
-        const password = nanoid(10)
-
-        const doctor = new Doctor()
-        doctor.full_name = dto.full_name
-        doctor.phone = dto.phone
-        doctor.gender = dto.gender
-        doctor.dayOfBirth = dto.dayOfBirth
-        doctor.email = dto.email
-        doctor.password = await this.hashing(password)
-        doctor.biography = dto.biography
-        doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
-        doctor.created_at = this.VNTime()
-        doctor.updated_at = doctor.created_at
-
-        await this.doctorRepository.save(doctor)
-
-        dto.careers.forEach(async c => {
-            const career = new Career()
-            career.doctor = doctor
-            career.medicalInstitute = c.medicalInstitute
-            career.periodEnd = c.periodEnd
-            career.periodStart = c.periodStart
-            career.position = c.position
-
-            await this.careerRepository.save(career)
-        })
-
-        dto.specialty.forEach(async s => {
-            const specialty = new Specialties()
-            specialty.doctor = doctor
-            specialty.image = s.image
-            specialty.levelOfSpecialty = s.levelOfSpecialty
-            specialty.specialty = s.specialty
-
-            await this.specialtyRepository.save(specialty)
-        })
-
-        dto.educationAndCertification.forEach(async e => {
-            const educationAndCertification = new EducationAndCertification()
-            educationAndCertification.address = e.address
-            educationAndCertification.dateOfReceiptOfDiploma = e.dateOfReceiptOfDiploma
-            educationAndCertification.degreeOfEducation = e.degreeOfEducation
-            educationAndCertification.diplomaNumberAndSeries = e.diplomaNumberAndSeries
-            educationAndCertification.doctor = doctor
-            educationAndCertification.institution = e.institution
-            educationAndCertification.specialtyByDiploma = e.specialtyByDiploma
-            educationAndCertification.typeOfEducationAndExperience = e.typeOfEducationAndExperience
-
-            await this.educationAndCertificationRepository.save(educationAndCertification)
-        })
-
-        await this.mailer(doctor.email, password)
-
-        return {
-            code: 200,
-            message: "success"
+            if (checkPhone)
+                throw new ConflictException('phone_number_has_already_been_registered')
+    
+            const checkEmail = await this.doctorRepository.findOne({
+                where: { email: dto.email }
+            })
+    
+            if (checkEmail)
+                throw new ConflictException('email_number_has_already_been_registered')
+    
+            const password = nanoid(10)
+    
+            const doctor = new Doctor()
+            doctor.full_name = dto.full_name
+            doctor.phone = dto.phone
+            doctor.gender = dto.gender
+            doctor.dayOfBirth = dto.dayOfBirth
+            doctor.email = dto.email
+            doctor.password = await this.hashing(password)
+            doctor.biography = dto.biography
+            doctor.fixed_times = await this.fixedArrayToString(dto.fixed_times)
+            doctor.created_at = this.VNTime()
+            doctor.updated_at = doctor.created_at
+    
+            await this.doctorRepository.save(doctor)
+    
+            dto.careers.forEach(async c => {
+                const career = new Career()
+                career.doctor = doctor
+                career.medicalInstitute = c.medicalInstitute
+                career.periodEnd = c.periodEnd
+                career.periodStart = c.periodStart
+                career.position = c.position
+    
+                await this.careerRepository.save(career)
+            })
+    
+            dto.specialty.forEach(async s => {
+                const specialty = new Specialties()
+                specialty.doctor = doctor
+                specialty.image = s.image
+                specialty.levelOfSpecialty = s.levelOfSpecialty
+                specialty.specialty = s.specialty
+    
+                await this.specialtyRepository.save(specialty)
+            })
+    
+            dto.educationAndCertification.forEach(async e => {
+                const educationAndCertification = new EducationAndCertification()
+                educationAndCertification.address = e.address
+                educationAndCertification.dateOfReceiptOfDiploma = e.dateOfReceiptOfDiploma
+                educationAndCertification.degreeOfEducation = e.degreeOfEducation
+                educationAndCertification.diplomaNumberAndSeries = e.diplomaNumberAndSeries
+                educationAndCertification.doctor = doctor
+                educationAndCertification.institution = e.institution
+                educationAndCertification.specialtyByDiploma = e.specialtyByDiploma
+                educationAndCertification.typeOfEducationAndExperience = e.typeOfEducationAndExperience
+    
+                await this.educationAndCertificationRepository.save(educationAndCertification)
+            })
+    
+            await this.mailer(doctor.email, password)
+            await queryRunner.commitTransaction();
+            return {
+                code: 200,
+                message: "success"
+            } 
+        } catch (error) {
+            await queryRunner.rollbackTransaction(); 
+            throw new BadRequestException('sign_up_failed')   
+        } finally {
+            await queryRunner.release();
         }
+        
     }
 
     async updateImage(dto: UpdateImageProfile, id: string): Promise<any> {
