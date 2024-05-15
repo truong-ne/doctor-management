@@ -53,22 +53,23 @@ export class DoctorService extends BaseService<Doctor> {
     }
 
     async signup(dto: SignUpDto): Promise<any> {
-        const queryRunner = this.dataSource.createQueryRunner();
+        const checkPhone = await this.findDoctorByPhone(dto.phone)
+
+        if (checkPhone)
+            throw new ConflictException('phone_number_has_already_been_registered')
+
+        const checkEmail = await this.doctorRepository.findOne({
+            where: { email: dto.email }
+        })
+
+        if (checkEmail)
+            throw new ConflictException('email_number_has_already_been_registered')
+
+        const queryRunner = await this.dataSource.createQueryRunner();
+        await queryRunner.connect();
         await queryRunner.startTransaction();
 
         try {
-            const checkPhone = await this.findDoctorByPhone(dto.phone)
-
-            if (checkPhone)
-                throw new ConflictException('phone_number_has_already_been_registered')
-    
-            const checkEmail = await this.doctorRepository.findOne({
-                where: { email: dto.email }
-            })
-    
-            if (checkEmail)
-                throw new ConflictException('email_number_has_already_been_registered')
-    
             const password = nanoid(10)
     
             const doctor = new Doctor()
@@ -83,6 +84,8 @@ export class DoctorService extends BaseService<Doctor> {
             doctor.created_at = this.VNTime()
             doctor.updated_at = doctor.created_at
     
+            await this.doctorRepository.save(doctor)
+
             await this.doctorRepository.save(doctor)
     
             dto.careers.forEach(async c => {
@@ -472,6 +475,23 @@ export class DoctorService extends BaseService<Doctor> {
 
         return { data: data }
     }
+
+    async disactiveDoctor(id: string) {
+        const doctor = await this.doctorRepository.findOne({
+            where: { id: id }
+        })
+
+        if (!doctor)
+            throw new NotFoundException('doctor_not_found')
+
+        doctor.isActive = false
+        await this.doctorRepository.save(doctor)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    } 
 
     async joinDoctor() {
         const startOfMonth = this.VNTime(-this.VNTime().getUTCDate() + 1)

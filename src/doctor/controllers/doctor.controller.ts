@@ -166,6 +166,14 @@ export class DoctorController {
         return await this.doctorService.statisticDoctorBySpecialty()
     }
 
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Admin dừng hoạt động của bs' })
+    @Get('admin/doctor/ban/:doctor_id')
+    async disactiveDoctor(@Param('doctor_id') doctor_id: string) {
+        return await this.doctorService.disactiveDoctor(doctor_id)
+    }
+
     @Get('list-by-id')
     async doctorListById(@Body('ids') ids: string[]) {
         return await this.doctorService.findAllDoctorInfo(ids)
