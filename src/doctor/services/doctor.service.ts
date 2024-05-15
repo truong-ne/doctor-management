@@ -487,6 +487,8 @@ export class DoctorService extends BaseService<Doctor> {
         doctor.isActive = false
         await this.doctorRepository.save(doctor)
 
+        this.cronDoctor()
+
         return {
             "code": 200,
             "message": "success"
