@@ -10,6 +10,7 @@ import { Cache } from "cache-manager";
 import { AdminGuard } from "src/auth/guards/admin.guard";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { ChangePasswordForgotDto } from "../dto/changePassword.dto";
+import { TransactionDto } from "../dto/transaction.dto";
 
 @ApiTags('PROFILE')
 @Controller('doctor')
@@ -207,5 +208,26 @@ export class DoctorController {
         @Body() dto: ChangePasswordForgotDto
     ) {
         return await this.doctorService.changePasswordForgot(dto)
+    }
+
+    @UseGuards(DoctorGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Bác sĩ rút tiền' })
+    @Post('/transaction/cash-out')
+    async cashOut(
+        @Req() req,
+        @Body() dto: TransactionDto,
+    ) {
+        return await this.doctorService.DoctorPaymentCashOut(req.user.id, dto.amount)
+    }
+
+    @UseGuards(DoctorGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Lịch sử giao dịch' })
+    @Get('/transaction')
+    async TransactionHistory(
+        @Req() req
+    ) {
+        return await this.doctorService.DoctorTransactionHistory(req.user.id)
     }
 }

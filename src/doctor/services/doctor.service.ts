@@ -599,4 +599,39 @@ export class DoctorService extends BaseService<Doctor> {
             data: data
         }
     }
+
+    //transaction
+    async DoctorPaymentCashOut(doctorId: string, amount: number) {
+        const rabbitmq = await this.amqpConnection.request<any>({
+            exchange: 'healthline.user.information',
+            routingKey: 'doctor_cash_out',
+            payload: { doctor: doctorId, amount: amount },
+            timeout: 10000,
+        })
+
+        const doctor = await this.findDoctorById(doctorId)
+        await this.doctorRepository.update({ id: doctorId }, {
+            account_balance: doctor.account_balance - amount
+        })
+
+        return {
+            code: 200,
+            message: 'success'
+        }
+    }
+
+    async DoctorTransactionHistory(doctorId: string) {
+        const rabbitmq = await this.amqpConnection.request<any>({
+            exchange: 'healthline.user.information',
+            routingKey: 'doctor_transaction',
+            payload: { doctor: doctorId },
+            timeout: 10000,
+        })
+
+        return {
+            code: 200,
+            message: 'success',
+            data: rabbitmq
+        }
+    }
 }

@@ -21,6 +21,10 @@ dotenv.config()
                 {
                     name: 'healthline.doctor.information',
                     type: 'direct'
+                },
+                {
+                    name: 'healthline.user.information',
+                    type: 'direct'
                 }
             ],
             uri: process.env.RABBITMQ_URL,
