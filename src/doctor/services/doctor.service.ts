@@ -455,14 +455,14 @@ export class DoctorService extends BaseService<Doctor> {
             where: { phone: dto.phone }
         })
 
-        if (vPhone)
+        if (vPhone && doctor.phone !== dto.phone)
             throw new ConflictException('phone_used')
 
         const vEmail = await this.doctorRepository.findOne({
             where: { email: dto.email }
         })
 
-        if (vEmail)
+        if (vEmail && doctor.email !== dto.email)
             throw new ConflictException('email_used')
 
         doctor.phone = dto.phone
