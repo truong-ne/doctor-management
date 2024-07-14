@@ -602,6 +602,11 @@ export class DoctorService extends BaseService<Doctor> {
 
     //transaction
     async DoctorPaymentCashOut(doctorId: string, amount: number) {
+        const doctor = await this.findDoctorById(doctorId)
+
+        if(doctor.account_balance < amount)
+            throw new BadRequestException('not_enough_money')
+        
         const rabbitmq = await this.amqpConnection.request<any>({
             exchange: 'healthline.user.information',
             routingKey: 'doctor_cash_out',
@@ -609,7 +614,6 @@ export class DoctorService extends BaseService<Doctor> {
             timeout: 10000,
         })
 
-        const doctor = await this.findDoctorById(doctorId)
         await this.doctorRepository.update({ id: doctorId }, {
             account_balance: doctor.account_balance - amount
         })
